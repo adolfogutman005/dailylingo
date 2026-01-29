@@ -197,11 +197,18 @@ class BookCard extends StatelessWidget {
                               print("Mark as read: ${book.title}");
                             },
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            onPressed: () {
-                              print("More options: ${book.title}");
-                            },
+                          PopupMenuButton(
+                            onSelected: print,
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(
+                                value: 'Add to Favorites',
+                                child: Text('Add to Favorites'),
+                              ),
+                              PopupMenuItem(
+                                value: 'Delete',
+                                child: Text('Delete'),
+                              ),
+                            ],
                           ),
                         ],
                       ),
