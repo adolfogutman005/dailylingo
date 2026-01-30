@@ -158,7 +158,12 @@ class BookCard extends StatelessWidget {
               flex: 2,
               child: InkWell(
                 onTap: () {
-                  print("Clicking Body");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookDetailsPage(book: book),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: EdgeInsets.all(12),
@@ -286,6 +291,83 @@ class _SortBarState extends State<SortBar> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class BookDetailsPage extends StatelessWidget {
+  final Book book;
+
+  const BookDetailsPage({super.key, required this.book});
+
+  @override
+  Widget build(BuildContext build) {
+    return Scaffold(
+      appBar: AppBar(
+        // Go Back
+        // Book Information Text
+        // Read Button
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            SizedBox(
+              width: 300,
+              child: AspectRatio(
+                aspectRatio: 1 / 1.414,
+                child: Image.network(book.imagePath, fit: BoxFit.contain),
+              ),
+            ),
+            // Title
+            Padding(
+              padding: EdgeInsets.only(top: 20, left: 10),
+              child: Text(
+                book.title,
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+            ),
+            // Actions
+            Row(
+              spacing: 8,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.favorite_border),
+                  onPressed: () {
+                    print("Add to favorites: ${book.title}");
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.check),
+                  onPressed: () {
+                    print("Mark as read: ${book.title}");
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.share),
+                  onPressed: () {
+                    print("Share ${book.title}");
+                  },
+                ),
+
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    print("Delete: ${book.title}");
+                  },
+                ),
+              ],
+            ),
+
+            // Information
+            // Review Space
+            // Statistics
+            // Cites and Notes
+            // Words Learned
+          ],
+        ),
       ),
     );
   }
