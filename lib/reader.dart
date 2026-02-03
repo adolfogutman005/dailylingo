@@ -178,15 +178,16 @@ class AddBookDialog extends StatelessWidget {
 
             const Divider(height: 1),
 
-            // Body (placeholder for now)
+            // Body
             Expanded(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 32),
-                  child: ElevatedButton(
+              child: Column(
+                children: [
+                  const SizedBox(height: 24),
+
+                  // Top-centered Add Book button
+                  ElevatedButton(
                     onPressed: () {
-                      print("Hello world");
+                      print("Add Book pressed");
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -205,7 +206,47 @@ class AddBookDialog extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
+
+                  const SizedBox(height: 16),
+                  const Divider(),
+
+                  // List of local books (UI placeholder)
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: books.length, // later: local PDFs / EPUBs
+                      itemBuilder: (context, index) {
+                        final book = books[index];
+
+                        return BookCard(
+                          book: book,
+                          trailingAction: TextButton(
+                            onPressed: () {
+                              print("Add ${book.title}");
+                            },
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.grey.shade200,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              "Add",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -269,8 +310,9 @@ class ProgressLine extends StatelessWidget {
 
 class BookCard extends StatelessWidget {
   final Book book;
+  final Widget? trailingAction;
 
-  const BookCard({super.key, required this.book});
+  const BookCard({super.key, required this.book, this.trailingAction});
 
   @override
   Widget build(BuildContext context) {
@@ -359,6 +401,8 @@ class BookCard extends StatelessWidget {
                               ),
                             ],
                           ),
+
+                          if (trailingAction != null) trailingAction!,
                         ],
                       ),
                     ],
