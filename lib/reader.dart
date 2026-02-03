@@ -143,6 +143,78 @@ void openVocabularyMore(BuildContext context, VocabularyItem item) {
   // or PopupMenuButton actions
 }
 
+class AddBookDialog extends StatelessWidget {
+  const AddBookDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Dialog(
+      insetPadding: const EdgeInsets.all(24), // margin from screen edges
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: SizedBox(
+        width: size.width * 0.85,
+        height: size.height * 0.85,
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  const Text(
+                    "Add Book",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(height: 1),
+
+            // Body (placeholder for now)
+            Expanded(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 32),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      print("Hello world");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                    child: const Text(
+                      "Add Book",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ProgressLine extends StatelessWidget {
   final double progress;
 
@@ -605,7 +677,13 @@ class ReaderAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         IconButton(
           icon: const Icon(Icons.add_circle),
-          onPressed: () => print("Add Book"),
+          onPressed: () {
+            showDialog(
+              context: context,
+              barrierDismissible: true, // tap outside to close
+              builder: (context) => const AddBookDialog(),
+            );
+          },
         ),
         IconButton(
           icon: const Icon(Icons.settings),
