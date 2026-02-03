@@ -41,6 +41,21 @@ class Book {
   }
 }
 
+class Cite {
+  final String text;
+  final int page;
+
+  Cite({required this.text, required this.page});
+}
+
+class Note {
+  final String highlightedText;
+  final String note;
+  final int page;
+
+  Note({required this.highlightedText, required this.note, required this.page});
+}
+
 // Define Demo Books
 final List<Map<String, Object?>> demoData = [
   {
@@ -70,6 +85,42 @@ final List<Map<String, Object?>> demoData = [
 ];
 
 final List<Book> books = demoData.map((e) => Book.fromMap(e)).toList();
+
+final List<Cite> dummyCites = [
+  Cite(text: "All men by nature desire to know.", page: 1),
+  Cite(
+    text: "The roots of education are bitter, but the fruit is sweet.",
+    page: 23,
+  ),
+];
+
+final List<Note> dummyNotes = [
+  Note(
+    highlightedText: "Virtue is a kind of mean",
+    note: "This reminds me of Aristotle's ethics",
+    page: 45,
+  ),
+  Note(
+    highlightedText: "Music gives soul to the universe",
+    note: "Plato again connecting music and morality",
+    page: 78,
+  ),
+];
+
+void openReader(BuildContext context, int page) {
+  print("Open reader at page $page");
+
+  // Later:
+  // Navigator.push(
+  //   context,
+  //   MaterialPageRoute(
+  //     builder: (_) => ReaderPage(
+  //       book: book,
+  //       initialPage: page,
+  //     ),
+  //   ),
+  // );
+}
 
 class ProgressLine extends StatelessWidget {
   final double progress;
@@ -302,10 +353,26 @@ class BookDetailsPage extends StatelessWidget {
   const BookDetailsPage({super.key, required this.book});
 
   @override
-  Widget build(BuildContext build) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         // Go Back
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Navigate to reader
+              print("Start Reading");
+            },
+            child: const Text(
+              "READ",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+
         // Book Information Text
         // Read Button
       ),
@@ -360,11 +427,52 @@ class BookDetailsPage extends StatelessWidget {
                 ),
               ],
             ),
-
+            // Cites
+            ExpansionTile(
+              title: const Text(
+                "Cites",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              children: dummyCites.map((cite) {
+                return ListTile(
+                  title: Text(
+                    '"${cite.text}"',
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                  trailing: Text(
+                    "p. ${cite.page}",
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  onTap: () => openReader(context, cite.page),
+                );
+              }).toList(),
+            ),
+            // Notes
+            ExpansionTile(
+              title: const Text(
+                "Notes",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              children: dummyNotes.map((note) {
+                return ListTile(
+                  title: Text(
+                    '"${note.highlightedText}"',
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                  subtitle: Text(note.note),
+                  trailing: Text(
+                    "p. ${note.page}",
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  onTap: () => openReader(context, note.page),
+                );
+              }).toList(),
+            ),
             // Information
+
             // Review Space
             // Statistics
-            // Cites and Notes
+
             // Words Learned
           ],
         ),
@@ -382,7 +490,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MainPage());
+    return MaterialApp(debugShowCheckedModeBanner: false, home: MainPage());
   }
 }
 
