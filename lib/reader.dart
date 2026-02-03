@@ -41,6 +41,13 @@ class Book {
   }
 }
 
+class VocabularyItem {
+  final String term;
+  final int page;
+
+  VocabularyItem({required this.term, required this.page});
+}
+
 class Cite {
   final String text;
   final int page;
@@ -107,6 +114,12 @@ final List<Note> dummyNotes = [
   ),
 ];
 
+final List<VocabularyItem> dummyVocabulary = [
+  VocabularyItem(term: "Telos", page: 12),
+  VocabularyItem(term: "Prima facie", page: 34),
+  VocabularyItem(term: "State of nature", page: 67),
+];
+
 void openReader(BuildContext context, int page) {
   print("Open reader at page $page");
 
@@ -120,6 +133,14 @@ void openReader(BuildContext context, int page) {
   //     ),
   //   ),
   // );
+}
+
+void openVocabularyMore(BuildContext context, VocabularyItem item) {
+  print("More options for vocabulary: ${item.term}");
+
+  // Later:
+  // showModalBottomSheet(...)
+  // or PopupMenuButton actions
 }
 
 class ProgressLine extends StatelessWidget {
@@ -465,6 +486,44 @@ class BookDetailsPage extends StatelessWidget {
                     style: const TextStyle(color: Colors.grey),
                   ),
                   onTap: () => openReader(context, note.page),
+                );
+              }).toList(),
+            ),
+            ExpansionTile(
+              title: const Text(
+                "Vocabulary",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              children: dummyVocabulary.map((item) {
+                return ListTile(
+                  title: Text(
+                    item.term,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+
+                  trailing: TextButton(
+                    onPressed: () => openVocabularyMore(context, item),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.grey.shade200, // box color
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          6,
+                        ), // set to 0 for sharp corners
+                        side: const BorderSide(
+                          color: Colors.grey,
+                        ), // optional border
+                      ),
+                    ),
+                    child: const Text(
+                      "More",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  onTap: () => openReader(context, item.page),
                 );
               }).toList(),
             ),
