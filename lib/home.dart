@@ -39,7 +39,6 @@ class _MainPageState extends State<MainPage> {
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
         ],
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -51,12 +50,10 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: const Icon(Icons.add),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 2,
         type: BottomNavigationBarType.fixed,
@@ -233,9 +230,7 @@ class _MainPageState extends State<MainPage> {
                       });
                     },
                   ),
-
                   const SizedBox(height: 12),
-
                   SizedBox(
                     height: 300,
                     child: ListView.builder(
@@ -313,7 +308,41 @@ class _MainPageState extends State<MainPage> {
   // ---------------- DAY INFO ----------------
 
   Widget _dayInformation() {
-    return const SizedBox(height: 200); // unchanged placeholder
+    final bool isToday = _sameDay(selectedDate, DateTime.now());
+
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isToday)
+            Center(
+              child: ElevatedButton(
+                onPressed: () {},
+                child: const Text("Start Daily Challenge"),
+              ),
+            ),
+          const SizedBox(height: 12),
+          Text(
+            isToday ? "To Do" : "Done",
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              title: const Text("Read"),
+              subtitle: const Text("Pages read: 8"),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text("Vocabulary"),
+              subtitle: const Text("Words learned: 3"),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // ---------------- HELPERS ----------------

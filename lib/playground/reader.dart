@@ -339,7 +339,6 @@ class BookCard extends StatelessWidget {
                 ),
               ),
             ),
-
             Expanded(
               flex: 2,
               child: InkWell(
@@ -401,7 +400,6 @@ class BookCard extends StatelessWidget {
                               ),
                             ],
                           ),
-
                           if (trailingAction != null) trailingAction!,
                         ],
                       ),
@@ -555,7 +553,6 @@ class BookDetailsPage extends StatelessWidget {
                     print("Share ${book.title}");
                   },
                 ),
-
                 IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () {
@@ -616,7 +613,6 @@ class BookDetailsPage extends StatelessWidget {
                     item.term,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-
                   trailing: TextButton(
                     onPressed: () => openVocabularyMore(context, item),
                     style: TextButton.styleFrom(
