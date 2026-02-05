@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,14 +35,27 @@ class _JournalingPageState extends State<JournalingPage> {
   final Map<String, List<JournalEntry>> journalsByMonth = {
     'February 2026': [
       JournalEntry(
-          'Feb 5', 'A calm day', 'Today I felt relaxed and focused...'),
-      JournalEntry('Feb 3', 'Music thoughts',
-          'I listened to a song that reminded me...'),
+        DateTime(2026, 2, 5),
+        'A calm day',
+        'Today I felt relaxed and focused...',
+      ),
+      JournalEntry(
+        DateTime(2026, 2, 3),
+        'Music thoughts',
+        'I listened to a song that reminded me...',
+      ),
     ],
     'January 2026': [
-      JournalEntry('Jan 28', 'New goals', 'This month I want to improve...'),
       JournalEntry(
-          'Jan 14', 'Rainy afternoon', 'It was raining and I stayed home...'),
+        DateTime(2026, 1, 28),
+        'New goals',
+        'This month I want to improve...',
+      ),
+      JournalEntry(
+        DateTime(2026, 1, 14),
+        'Rainy afternoon',
+        'It was raining and I stayed home...',
+      ),
     ],
   };
 
@@ -53,8 +67,14 @@ class _JournalingPageState extends State<JournalingPage> {
       appBar: AppBar(
         title: const Text('Journal'),
         actions: [
-          IconButton(icon: const Icon(Icons.calendar_today), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {},
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -86,9 +106,7 @@ class _JournalingPageState extends State<JournalingPage> {
   Widget _startDailyJournaling() {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 320,
-        ),
+        constraints: const BoxConstraints(maxWidth: 320),
         child: Container(
           height: 80,
           alignment: Alignment.center,
@@ -153,9 +171,11 @@ class _JournalingPageState extends State<JournalingPage> {
         children: [
           Icon(icon, size: 40),
           const SizedBox(height: 12),
-          Text(title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -166,9 +186,13 @@ class _JournalingPageState extends State<JournalingPage> {
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 32,
+            vertical: 14,
+          ),
         ),
         child: const Text('Random Journal'),
       ),
@@ -206,9 +230,35 @@ class _JournalingPageState extends State<JournalingPage> {
   }
 
   Widget _journalTile(JournalEntry entry) {
+    final month = DateFormat('MMM').format(entry.date).toUpperCase();
+    final day = DateFormat('d').format(entry.date);
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text('${entry.date} · ${entry.title}'),
+      leading: SizedBox(
+        width: 48,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              month,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            Text(
+              day,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+      title: Text(entry.title),
       subtitle: Text(
         entry.preview,
         maxLines: 1,
@@ -222,7 +272,7 @@ class _JournalingPageState extends State<JournalingPage> {
 // ---------- Model ----------
 
 class JournalEntry {
-  final String date;
+  final DateTime date;
   final String title;
   final String preview;
 
