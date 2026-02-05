@@ -84,17 +84,27 @@ class _JournalingPageState extends State<JournalingPage> {
   // ---------- UI ----------
 
   Widget _startDailyJournaling() {
-    return Container(
-      height: 120,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.blue.shade50,
-        border: Border.all(color: Colors.blue),
-      ),
-      child: const Text(
-        'Start Daily Journaling',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: 320,
+        ),
+        child: Container(
+          height: 80,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: Colors.blue.shade50,
+            border: Border.all(color: Colors.blue),
+          ),
+          child: const Text(
+            'Start Daily Journaling',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
     );
   }
