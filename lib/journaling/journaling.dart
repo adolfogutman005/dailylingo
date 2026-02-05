@@ -37,24 +37,40 @@ class _JournalingPageState extends State<JournalingPage> {
       JournalEntry(
         DateTime(2026, 2, 5),
         'A calm day',
-        'Today I felt relaxed and focused...',
+        '''Today felt unusually calm. I woke up earlier than usual and decided not to check my phone immediately.
+
+Instead, I made coffee and sat near the window while the city was still quiet. I spent most of the morning reading and reflecting on how fast the past weeks have gone by.
+
+There was no rush, no pressure — just a quiet sense of focus. I wish more days felt like this.''',
       ),
       JournalEntry(
         DateTime(2026, 2, 3),
         'Music thoughts',
-        'I listened to a song that reminded me...',
+        '''I listened to an old song today that immediately brought back memories from years ago.
+
+It’s strange how music can transport you to a completely different time — almost like opening a door you forgot existed.
+
+For a few minutes, I wasn’t thinking about the present at all. Just memories, feelings, and how much has changed since then.''',
       ),
     ],
     'January 2026': [
       JournalEntry(
         DateTime(2026, 1, 28),
         'New goals',
-        'This month I want to improve...',
+        '''This month I want to focus on building things consistently.
+
+Not huge projects — just steady progress every day. Even one hour of deep work is better than scattered effort.
+
+If I can maintain that rhythm, the results will compound.''',
       ),
       JournalEntry(
         DateTime(2026, 1, 14),
         'Rainy afternoon',
-        'It was raining and I stayed home...',
+        '''It rained almost the entire afternoon, so I stayed home.
+
+Made some tea, organized my desk, and finally finished a book I had been postponing.
+
+Sometimes slowing down is exactly what you need.''',
       ),
     ],
   };
@@ -260,9 +276,10 @@ class _JournalingPageState extends State<JournalingPage> {
       ),
       title: Text(entry.title),
       subtitle: Text(
-        entry.preview,
+        entry.content.replaceAll('\n', ' '), // prevents line break glitches
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        softWrap: false,
       ),
       onTap: () {},
     );
@@ -274,7 +291,7 @@ class _JournalingPageState extends State<JournalingPage> {
 class JournalEntry {
   final DateTime date;
   final String title;
-  final String preview;
+  final String content;
 
-  JournalEntry(this.date, this.title, this.preview);
+  JournalEntry(this.date, this.title, this.content);
 }
