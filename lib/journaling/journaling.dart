@@ -154,10 +154,26 @@ Sometimes slowing down is exactly what you need.''',
 
   Widget _challengeRow() {
     final challenges = [
-      {'title': 'Favorite Song', 'icon': Icons.music_note},
-      {'title': 'Favorite Movie', 'icon': Icons.movie},
-      {'title': 'Happiest Memory', 'icon': Icons.emoji_emotions},
-      {'title': 'Random Thought', 'icon': Icons.lightbulb},
+      {
+        'title': 'My Favorite Song',
+        'icon': Icons.music_note,
+        'placeholder': 'What is your favorite song and why?',
+      },
+      {
+        'title': 'My Favorite Movie',
+        'icon': Icons.movie,
+        'placeholder': 'What is your favorite movie and what makes it special?',
+      },
+      {
+        'title': 'Happiest Memory',
+        'icon': Icons.emoji_emotions,
+        'placeholder': 'What is one of the happiest memories of your life?',
+      },
+      {
+        'title': 'Random Thought',
+        'icon': Icons.lightbulb,
+        'placeholder': 'Write about any thought currently on your mind.',
+      },
     ];
 
     return SizedBox(
@@ -169,38 +185,53 @@ Sometimes slowing down is exactly what you need.''',
         itemBuilder: (context, index) {
           final item = challenges[index];
           return _challengeCard(
-            title: item['title'] as String,
-            icon: item['icon'] as IconData,
-          );
+              title: item['title'] as String,
+              icon: item['icon'] as IconData,
+              placeholder: item['placeholder'] as String);
         },
       ),
     );
   }
 
-  Widget _challengeCard({required String title, required IconData icon}) {
-    return Container(
-      width: 140,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 6,
+  Widget _challengeCard(
+      {required String title,
+      required IconData icon,
+      required String placeholder}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => WriteJournalPage(
+              initialTitle: title,
+              placeholder: placeholder,
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 40),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-        ],
+        );
+      },
+      child: Ink(
+        width: 140,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          boxShadow: const [
+            BoxShadow(blurRadius: 6),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }
