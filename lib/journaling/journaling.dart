@@ -104,6 +104,7 @@ Sometimes slowing down is exactly what you need.''',
           children: [
             _startDailyJournaling(),
             const SizedBox(height: 24),
+            _sectionTitle('Challenges'),
             _challengeRow(),
             const SizedBox(height: 16),
             _randomJournalButton(),
@@ -283,6 +284,19 @@ Sometimes slowing down is exactly what you need.''',
       onTap: () {},
     );
   }
+}
+
+Widget _sectionTitle(String title) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      title,
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
 }
 
 // ---------- Model ----------
