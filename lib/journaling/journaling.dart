@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'write_journal_page.dart';
+import 'journal_detail_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -320,7 +321,14 @@ Sometimes slowing down is exactly what you need.''',
         overflow: TextOverflow.ellipsis,
         softWrap: false,
       ),
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => JournalDetailPage(entry: entry),
+          ),
+        );
+      },
     );
   }
 }
