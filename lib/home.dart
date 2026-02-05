@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'state/user_settings_state.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _HomePageState extends State<HomePage> {
   // -------- SESSION STATE (TEMPORARY) --------
   late String currentSourceLang;
   late String currentTargetLang;
@@ -58,11 +58,13 @@ class _MainPageState extends State<MainPage> {
         currentIndex: 2,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Habit1"),
-          BottomNavigationBarItem(icon: Icon(Icons.edit), label: "Habit2"),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Reading"),
+          BottomNavigationBarItem(icon: Icon(Icons.edit), label: "Journaling"),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: "Habit3"),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Habit4"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.school), label: "Note Taking"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart), label: "Vocabulary"),
         ],
       ),
     );
