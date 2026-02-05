@@ -95,7 +95,7 @@ Sometimes slowing down is exactly what you need.''',
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.edit),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -178,7 +178,6 @@ Sometimes slowing down is exactly what you need.''',
         boxShadow: [
           BoxShadow(
             blurRadius: 6,
-            color: Colors.black.withOpacity(0.1),
           ),
         ],
       ),
