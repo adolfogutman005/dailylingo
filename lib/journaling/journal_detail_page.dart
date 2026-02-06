@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'journaling.dart'; // or wherever your model lives
+import 'feedback_page.dart';
 
 class JournalDetailPage extends StatefulWidget {
   final JournalEntry entry;
@@ -41,8 +42,26 @@ class _JournalDetailPageState extends State<JournalDetailPage>
   }
 
   void _feedback() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Feedback coming soon')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FeedbackPage(
+          title: "My Journal",
+          content: "I go to the park yesterday.",
+          corrections: [
+            Correction(
+              start: 2,
+              end: 4,
+              wrong: "go",
+              right: "went",
+              explanation:
+                  "Past simple is required because the action finished yesterday.",
+              example: "I went to the store.",
+              type: CorrectionType.grammar,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
