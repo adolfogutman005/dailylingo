@@ -344,7 +344,7 @@ class _FeedbackPageState extends State<FeedbackPage>
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
               child: Text(
-                widget.originalContent, // Later replace with corrected version
+                widget.correctedContent, // Later replace with corrected version
                 style: const TextStyle(
                   fontSize: 16,
                   height: 1.5,
