@@ -77,79 +77,114 @@ class _FeedbackPageState extends State<FeedbackPage>
     super.dispose();
   }
 
-  Widget buildHighlightedText() {
-    final spans = <TextSpan>[];
-    int current = 0;
+  Color _highlightColor({
+    required Correction correction,
+    required int minLen,
+    required int maxLen,
+  }) {
+    final length = correction.end - correction.start;
 
-    /// Filter corrections
-    final visibleCorrections =
-        // Filters the corrections selected on Active Filters
-        widget.corrections.where((c) => activeFilters.contains(c.type)).toList()
-
-          /// MOST SPECIFIC FIRST
-          ..sort((a, b) {
-            final lenA = a.end - a.start;
-            final lenB = b.end - b.start;
-            return lenA.compareTo(lenB);
-          });
-
-    /// Prevent overlap chaos
-    final occupied = <int>{};
-
-    final usable = <Correction>[];
-
-    for (final c in visibleCorrections) {
-      bool overlaps = false;
-
-      for (int i = c.start; i < c.end; i++) {
-        if (occupied.contains(i)) {
-          overlaps = true;
-          break;
-        }
-      }
-
-      if (!overlaps) {
-        usable.add(c);
-        for (int i = c.start; i < c.end; i++) {
-          occupied.add(i);
-        }
-      }
+    // Normalize: shorter = stronger
+    double t;
+    if (maxLen == minLen) {
+      t = 1; // avoid division by zero
+    } else {
+      t = 1 - ((length - minLen) / (maxLen - minLen));
     }
 
-    /// Now sort by position
-    usable.sort((a, b) => a.start.compareTo(b.start));
+    // Strong but readable range
+    final channel = (160 + (60 * t)).round();
 
-    // Frame full text as TextSpan List
-    for (final c in usable) {
-      // Uncorrected text is framed as TextSpan without Style
-      if (current < c.start) {
-        spans.add(
-          TextSpan(
-            text: widget.originalContent.substring(current, c.start),
-          ),
-        );
+    switch (correction.type) {
+      case CorrectionType.grammar:
+        return Color.fromARGB(255, channel, 70, 70);
+
+      case CorrectionType.suggestion:
+        return Color.fromARGB(255, channel, channel, 80);
+    }
+  }
+
+  Widget buildHighlightedText() {
+    final text = widget.originalContent;
+    final spans = <TextSpan>[];
+
+    final active = widget.corrections
+        .where((c) => activeFilters.contains(c.type))
+        .toList();
+
+    if (active.isEmpty) {
+      return Text(text);
+    }
+
+    int len(Correction c) => c.end - c.start;
+
+    // Separate by type
+    final grammar =
+        active.where((c) => c.type == CorrectionType.grammar).toList();
+    final suggestions =
+        active.where((c) => c.type == CorrectionType.suggestion).toList();
+
+    int minLen(List<Correction> list) =>
+        list.isEmpty ? 0 : list.map(len).reduce((a, b) => a < b ? a : b);
+
+    int maxLen(List<Correction> list) =>
+        list.isEmpty ? 1 : list.map(len).reduce((a, b) => a > b ? a : b);
+
+    final gMin = minLen(grammar);
+    final gMax = maxLen(grammar);
+
+    final sMin = minLen(suggestions);
+    final sMax = maxLen(suggestions);
+
+    // Build segmentation points
+    final points = <int>{0, text.length};
+
+    for (final c in active) {
+      points.add(c.start);
+      points.add(c.end);
+    }
+
+    final sortedPoints = points.toList()..sort();
+
+    for (int i = 0; i < sortedPoints.length - 1; i++) {
+      final start = sortedPoints[i];
+      final end = sortedPoints[i + 1];
+
+      if (start == end) continue;
+
+      final segment = text.substring(start, end);
+
+      final covering =
+          active.where((c) => c.start <= start && c.end >= end).toList();
+
+      if (covering.isEmpty) {
+        spans.add(TextSpan(text: segment));
+        continue;
       }
 
-      // Create a Text Span with Style for All Corrections
-      spans.add(
-        TextSpan(
-          text: widget.originalContent.substring(c.start, c.end),
-          style: TextStyle(
-            backgroundColor:
-                c.type == CorrectionType.grammar ? Colors.red : Colors.yellow,
-          ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () => showCorrectionSheet(c),
-        ),
+      // MOST SPECIFIC WINS
+      covering.sort(
+        (a, b) => (a.end - a.start).compareTo(b.end - b.start),
       );
 
-      current = c.end;
-    }
+      final chosen = covering.first;
 
-    // add remaining space
-    if (current < widget.originalContent.length) {
+      final min = chosen.type == CorrectionType.grammar ? gMin : sMin;
+      final max = chosen.type == CorrectionType.grammar ? gMax : sMax;
+
       spans.add(
-        TextSpan(text: widget.originalContent.substring(current)),
+        TextSpan(
+          text: segment,
+          style: TextStyle(
+            backgroundColor: _highlightColor(
+              correction: chosen,
+              minLen: min,
+              maxLen: max,
+            ),
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () => showCorrectionSheet(chosen),
+        ),
       );
     }
 
