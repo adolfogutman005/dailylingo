@@ -19,6 +19,8 @@ class Correction {
   final String example;
   final CorrectionType type;
 
+  final String concept;
+
   Correction({
     required this.start,
     required this.end,
@@ -27,6 +29,7 @@ class Correction {
     required this.explanation,
     required this.example,
     required this.type,
+    required this.concept,
   });
 }
 
@@ -62,6 +65,13 @@ class _FeedbackPageState extends State<FeedbackPage>
     CorrectionType.grammar,
     CorrectionType.suggestion,
   };
+
+  List<String> get learnedConcepts {
+    final concepts = widget.corrections.map((c) => c.concept).toSet().toList();
+
+    concepts.sort();
+    return concepts;
+  }
 
   @override
   void initState() {
@@ -102,6 +112,54 @@ class _FeedbackPageState extends State<FeedbackPage>
       case CorrectionType.suggestion:
         return Color.fromARGB(255, channel, channel, 80);
     }
+  }
+
+  Widget buildLearnedConcepts() {
+    final concepts = learnedConcepts;
+
+    if (concepts.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(top: 24),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        title: const Text(
+          "What You Learned",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Text(
+          "${concepts.length} concept${concepts.length == 1 ? '' : 's'}",
+          style: const TextStyle(fontSize: 13),
+        ),
+        children: concepts.map((c) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.check_circle_outline, size: 18, color: Colors.green),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    c,
+                    style: TextStyle(fontSize: 15, height: 1.4),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
 
   Widget buildHighlightedText() {
@@ -382,8 +440,10 @@ class _FeedbackPageState extends State<FeedbackPage>
 
                 Expanded(
                   child: SingleChildScrollView(
-                    child: buildHighlightedText(),
-                  ),
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [buildHighlightedText(), buildLearnedConcepts()],
+                  )),
                 ),
               ],
             ),

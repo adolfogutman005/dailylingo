@@ -57,51 +57,51 @@ class _JournalDetailPageState extends State<JournalDetailPage>
           corrections: [
             /// 1️⃣ GRAMMAR — verb tense (word-level, most specific)
             Correction(
-              start: 2,
-              end: 4,
-              wrong: "go",
-              right: "went",
-              explanation:
-                  "The past simple tense is required because the action was completed in the past.",
-              example: "I went to the store.",
-              type: CorrectionType.grammar,
-            ),
+                start: 2,
+                end: 4,
+                wrong: "go",
+                right: "went",
+                explanation:
+                    "The past simple tense is required because the action was completed in the past.",
+                example: "I went to the store.",
+                type: CorrectionType.grammar,
+                concept: "Past tense of go"),
 
             /// 2️⃣ GRAMMAR — time reference forces past tense (sentence-level)
             Correction(
-              start: 0,
-              end: 27,
-              wrong: "I go to the park yesterday.",
-              right: "I went to the park yesterday.",
-              explanation:
-                  "A finished time expression like 'yesterday' requires the verb to be in the past tense.",
-              example: "She studied late yesterday.",
-              type: CorrectionType.grammar,
-            ),
+                start: 0,
+                end: 27,
+                wrong: "I go to the park yesterday.",
+                right: "I went to the park yesterday.",
+                explanation:
+                    "A finished time expression like 'yesterday' requires the verb to be in the past tense.",
+                example: "She studied late yesterday.",
+                type: CorrectionType.grammar,
+                concept: "Time expressions require past tense"),
 
             /// 3️⃣ SUGGESTION — stylistic reordering
             Correction(
-              start: 1,
-              end: 27,
-              wrong: "I went to the park yesterday.",
-              right: "Yesterday, I went to the park.",
-              explanation:
-                  "Starting with the time expression makes the sentence sound more natural.",
-              example: "Last night, I read a book.",
-              type: CorrectionType.suggestion,
-            ),
+                start: 1,
+                end: 27,
+                wrong: "I went to the park yesterday.",
+                right: "Yesterday, I went to the park.",
+                explanation:
+                    "Starting with the time expression makes the sentence sound more natural.",
+                example: "Last night, I read a book.",
+                type: CorrectionType.suggestion,
+                concept: "Starting sentences with time expressions"),
 
             /// 4️⃣ SUGGESTION — add descriptive detail
             Correction(
-              start: 8,
-              end: 16,
-              wrong: "the park",
-              right: "the nearby park",
-              explanation:
-                  "Adding a descriptive adjective makes the sentence more vivid.",
-              example: "She walked to the nearby café.",
-              type: CorrectionType.suggestion,
-            ),
+                start: 8,
+                end: 16,
+                wrong: "the park",
+                right: "the nearby park",
+                explanation:
+                    "Adding a descriptive adjective makes the sentence more vivid.",
+                example: "She walked to the nearby café.",
+                type: CorrectionType.suggestion,
+                concept: "Using adjectives to add detail"),
           ],
         ),
       ),
