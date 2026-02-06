@@ -162,33 +162,72 @@ class _FeedbackPageState extends State<FeedbackPage>
 
   // Bottom Modal Sheet
   void showCorrectionSheet(Correction c) {
-    const labelStyle = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) {
         return Padding(
-          padding: const EdgeInsets.all(20),
-          child: Wrap(
-            children: [
-              const SizedBox(height: 10),
-              const Text("Wrong:", style: labelStyle),
-              Text(c.wrong),
-              const SizedBox(height: 14),
-              const Text("Right:", style: labelStyle),
-              Text(c.right),
-              const SizedBox(height: 14),
-              const Text("Explanation:", style: labelStyle),
-              Text(c.explanation),
-              const SizedBox(height: 14),
-              const Text("Example:", style: labelStyle),
-              Text(c.example),
-              const SizedBox(height: 30),
-            ],
+          padding: EdgeInsets.fromLTRB(
+            20,
+            16,
+            20,
+            MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+
+                _section(
+                  icon: Icons.close_rounded,
+                  iconColor: Colors.redAccent,
+                  title: "Incorrect",
+                  content: c.wrong,
+                ),
+
+                const SizedBox(height: 14),
+
+                _section(
+                  icon: Icons.check_circle_rounded,
+                  iconColor: Colors.green,
+                  title: "Correct",
+                  content: c.right,
+                ),
+
+                const SizedBox(height: 20),
+
+                _infoCard(
+                  icon: Icons.lightbulb_outline,
+                  title: "Explanation",
+                  content: c.explanation,
+                ),
+
+                const SizedBox(height: 14),
+
+                _infoCard(
+                  icon: Icons.menu_book_outlined,
+                  title: "Example",
+                  content: c.example,
+                ),
+
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         );
       },
@@ -294,4 +333,86 @@ class _FeedbackPageState extends State<FeedbackPage>
       ),
     );
   }
+}
+
+Widget _section({
+  required IconData icon,
+  required Color iconColor,
+  required String title,
+  required String content,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.grey.shade100,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: iconColor),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          content,
+          style: const TextStyle(fontSize: 15, height: 1.4),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _infoCard({
+  required IconData icon,
+  required String title,
+  required String content,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.blueGrey),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          content,
+          style: const TextStyle(fontSize: 15, height: 1.5),
+        ),
+      ],
+    ),
+  );
 }
