@@ -151,14 +151,17 @@ class _FeedbackPageState extends State<FeedbackPage>
       );
     }
 
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(
-          fontSize: 16,
-          height: 1.5,
-          color: Colors.black,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 16,
+            height: 1.5,
+            color: Colors.black,
+          ),
+          children: spans,
         ),
-        children: spans,
       ),
     );
   }
@@ -270,6 +273,7 @@ class _FeedbackPageState extends State<FeedbackPage>
           const SizedBox(width: 6),
           OutlinedButton(
             onPressed: () {
+              // Add Database Saving Logic
               Navigator.pop(context);
             },
             child: const Text("Save without Feedback"),
