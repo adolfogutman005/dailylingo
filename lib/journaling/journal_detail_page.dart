@@ -47,7 +47,8 @@ class _JournalDetailPageState extends State<JournalDetailPage>
       MaterialPageRoute(
         builder: (_) => FeedbackPage(
           title: "My Journal",
-          content: "I go to the park yesterday.",
+          originalContent: "I go to the park yesterday.",
+          correctedContent: "I went to the park yesterday",
           corrections: [
             Correction(
               start: 2,

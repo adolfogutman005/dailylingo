@@ -36,13 +36,15 @@ class Correction {
 
 class FeedbackPage extends StatefulWidget {
   final String title;
-  final String content;
+  final String originalContent;
+  final String correctedContent;
   final List<Correction> corrections;
 
   const FeedbackPage({
     super.key,
     required this.title,
-    required this.content,
+    required this.originalContent,
+    required this.correctedContent,
     required this.corrections,
   });
 
@@ -123,7 +125,7 @@ class _FeedbackPageState extends State<FeedbackPage>
       if (current < c.start) {
         spans.add(
           TextSpan(
-            text: widget.content.substring(current, c.start),
+            text: widget.originalContent.substring(current, c.start),
           ),
         );
       }
@@ -131,7 +133,7 @@ class _FeedbackPageState extends State<FeedbackPage>
       // Create a Text Span with Style for All Corrections
       spans.add(
         TextSpan(
-          text: widget.content.substring(c.start, c.end),
+          text: widget.originalContent.substring(c.start, c.end),
           style: TextStyle(
             backgroundColor:
                 c.type == CorrectionType.grammar ? Colors.red : Colors.yellow,
@@ -145,9 +147,9 @@ class _FeedbackPageState extends State<FeedbackPage>
     }
 
     // add remaining space
-    if (current < widget.content.length) {
+    if (current < widget.originalContent.length) {
       spans.add(
-        TextSpan(text: widget.content.substring(current)),
+        TextSpan(text: widget.originalContent.substring(current)),
       );
     }
 
@@ -342,7 +344,7 @@ class _FeedbackPageState extends State<FeedbackPage>
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
               child: Text(
-                widget.content, // Later replace with corrected version
+                widget.originalContent, // Later replace with corrected version
                 style: const TextStyle(
                   fontSize: 16,
                   height: 1.5,
