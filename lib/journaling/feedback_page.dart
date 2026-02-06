@@ -53,6 +53,7 @@ class FeedbackPage extends StatefulWidget {
 class _FeedbackPageState extends State<FeedbackPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late TextEditingController _titleController;
 
   /// Active filters
   Set<CorrectionType> activeFilters = {
@@ -64,11 +65,13 @@ class _FeedbackPageState extends State<FeedbackPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _titleController = TextEditingController(text: widget.title);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _titleController.dispose();
     super.dispose();
   }
 
@@ -242,7 +245,21 @@ class _FeedbackPageState extends State<FeedbackPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: TextField(
+            controller: _titleController,
+            decoration: const InputDecoration(
+              hintText: "Title",
+              border: InputBorder.none,
+            ),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {
