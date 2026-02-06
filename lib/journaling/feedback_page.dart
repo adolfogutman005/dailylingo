@@ -106,100 +106,115 @@ class _FeedbackPageState extends State<FeedbackPage>
 
   Widget buildHighlightedText() {
     final text = widget.originalContent;
-    final spans = <TextSpan>[];
+
+    const baseStyle = TextStyle(
+      fontSize: 16,
+      height: 1.6, // slightly better reading comfort
+      color: Colors.black87,
+    );
 
     final active = widget.corrections
         .where((c) => activeFilters.contains(c.type))
         .toList();
 
+    Widget child;
+
+    /// -----------------------------
+    /// NO ACTIVE FILTERS
+    /// -----------------------------
     if (active.isEmpty) {
-      return Text(text);
-    }
+      child = Text(
+        text,
+        textAlign: TextAlign.left,
+        style: baseStyle,
+      );
+    } else {
+      final spans = <TextSpan>[];
 
-    int len(Correction c) => c.end - c.start;
+      int len(Correction c) => c.end - c.start;
 
-    // Separate by type
-    final grammar =
-        active.where((c) => c.type == CorrectionType.grammar).toList();
-    final suggestions =
-        active.where((c) => c.type == CorrectionType.suggestion).toList();
+      // Separate by type
+      final grammar =
+          active.where((c) => c.type == CorrectionType.grammar).toList();
+      final suggestions =
+          active.where((c) => c.type == CorrectionType.suggestion).toList();
 
-    int minLen(List<Correction> list) =>
-        list.isEmpty ? 0 : list.map(len).reduce((a, b) => a < b ? a : b);
+      int minLen(List<Correction> list) =>
+          list.isEmpty ? 0 : list.map(len).reduce((a, b) => a < b ? a : b);
 
-    int maxLen(List<Correction> list) =>
-        list.isEmpty ? 1 : list.map(len).reduce((a, b) => a > b ? a : b);
+      int maxLen(List<Correction> list) =>
+          list.isEmpty ? 1 : list.map(len).reduce((a, b) => a > b ? a : b);
 
-    final gMin = minLen(grammar);
-    final gMax = maxLen(grammar);
+      final gMin = minLen(grammar);
+      final gMax = maxLen(grammar);
 
-    final sMin = minLen(suggestions);
-    final sMax = maxLen(suggestions);
+      final sMin = minLen(suggestions);
+      final sMax = maxLen(suggestions);
 
-    // Build segmentation points
-    final points = <int>{0, text.length};
+      /// Build segmentation points
+      final points = <int>{0, text.length};
 
-    for (final c in active) {
-      points.add(c.start);
-      points.add(c.end);
-    }
-
-    final sortedPoints = points.toList()..sort();
-
-    for (int i = 0; i < sortedPoints.length - 1; i++) {
-      final start = sortedPoints[i];
-      final end = sortedPoints[i + 1];
-
-      if (start == end) continue;
-
-      final segment = text.substring(start, end);
-
-      final covering =
-          active.where((c) => c.start <= start && c.end >= end).toList();
-
-      if (covering.isEmpty) {
-        spans.add(TextSpan(text: segment));
-        continue;
+      for (final c in active) {
+        points.add(c.start);
+        points.add(c.end);
       }
 
-      // MOST SPECIFIC WINS
-      covering.sort(
-        (a, b) => (a.end - a.start).compareTo(b.end - b.start),
-      );
+      final sortedPoints = points.toList()..sort();
 
-      final chosen = covering.first;
+      for (int i = 0; i < sortedPoints.length - 1; i++) {
+        final start = sortedPoints[i];
+        final end = sortedPoints[i + 1];
 
-      final min = chosen.type == CorrectionType.grammar ? gMin : sMin;
-      final max = chosen.type == CorrectionType.grammar ? gMax : sMax;
+        if (start == end) continue;
 
-      spans.add(
-        TextSpan(
-          text: segment,
-          style: TextStyle(
-            backgroundColor: _highlightColor(
-              correction: chosen,
-              minLen: min,
-              maxLen: max,
+        final segment = text.substring(start, end);
+
+        final covering =
+            active.where((c) => c.start <= start && c.end >= end).toList();
+
+        if (covering.isEmpty) {
+          spans.add(TextSpan(text: segment));
+          continue;
+        }
+
+        /// MOST SPECIFIC WINS
+        covering.sort(
+          (a, b) => (a.end - a.start).compareTo(b.end - b.start),
+        );
+
+        final chosen = covering.first;
+
+        final min = chosen.type == CorrectionType.grammar ? gMin : sMin;
+        final max = chosen.type == CorrectionType.grammar ? gMax : sMax;
+
+        spans.add(
+          TextSpan(
+            text: segment,
+            style: TextStyle(
+              backgroundColor: _highlightColor(
+                correction: chosen,
+                minLen: min,
+                maxLen: max,
+              ),
             ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => showCorrectionSheet(chosen),
           ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () => showCorrectionSheet(chosen),
+        );
+      }
+
+      child = RichText(
+        text: TextSpan(
+          style: baseStyle,
+          children: spans,
         ),
       );
     }
 
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: RichText(
-        text: TextSpan(
-          style: const TextStyle(
-            fontSize: 16,
-            height: 1.5,
-            color: Colors.black,
-          ),
-          children: spans,
-        ),
-      ),
+    /// ALWAYS full width → never centers
+    return SizedBox(
+      width: double.infinity,
+      child: child,
     );
   }
 
