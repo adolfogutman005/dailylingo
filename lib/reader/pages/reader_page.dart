@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/reader_app_bar.dart';
 import '../widgets/book_card.dart';
 import '../widgets/sort_bar.dart';
 import '../data/demo_data_books.dart';
@@ -18,23 +17,12 @@ class _ReaderPageState extends State<ReaderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: ReaderAppBar(
-        filters: filters,
-        selected: selectedFilter,
-        onFilterSelected: (filter) {
-          setState(() {
-            selectedFilter = filter;
-          });
-        },
-      ),
-      body: const Body(),
-    );
+    return ReaderBody();
   }
 }
 
-class Body extends StatelessWidget {
-  const Body({super.key});
+class ReaderBody extends StatelessWidget {
+  const ReaderBody({super.key});
 
   @override
   Widget build(BuildContext context) {
