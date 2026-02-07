@@ -3,27 +3,6 @@ import 'package:intl/intl.dart';
 import 'write_journal_page.dart';
 import 'journal_detail_page.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Journal',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
-      ),
-      home: const JournalingPage(),
-    );
-  }
-}
-
 class JournalingPage extends StatefulWidget {
   const JournalingPage({super.key});
 
@@ -81,48 +60,22 @@ Sometimes slowing down is exactly what you need.''',
   Widget build(BuildContext context) {
     final journals = journalsByMonth[selectedMonth]!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Journal'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {},
-          ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _startDailyJournaling(),
+          const SizedBox(height: 24),
+          _sectionTitle('Challenges'),
+          _challengeRow(),
+          const SizedBox(height: 16),
+          _randomJournalButton(),
+          const SizedBox(height: 32),
+          _monthSelector(),
+          const SizedBox(height: 12),
+          ...journals.map(_journalTile),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const WriteJournalPage(),
-            ),
-          );
-        },
-        child: const Icon(Icons.edit),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _startDailyJournaling(),
-            const SizedBox(height: 24),
-            _sectionTitle('Challenges'),
-            _challengeRow(),
-            const SizedBox(height: 16),
-            _randomJournalButton(),
-            const SizedBox(height: 32),
-            _monthSelector(),
-            const SizedBox(height: 12),
-            ...journals.map(_journalTile),
-          ],
-        ),
       ),
     );
   }

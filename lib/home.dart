@@ -5,29 +5,9 @@ import 'journaling/journaling.dart';
 // import 'notetaking/note_taking_page.dart';
 // import 'vocabulary_page.dart';
 import 'reader/pages/reader_page.dart';
+import 'reader/widgets/reader_app_bar.dart';
 import 'journaling/write_journal_page.dart';
 // import 'journaling/write_note_page.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Dailylingo',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
-      ),
-      home: const MainScreen(),
-    );
-  }
-}
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -38,6 +18,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 2; // Default to Home
+  String selectedFilter = "Reading";
 
   // Pages
   final List<Widget> _pages = [
@@ -48,28 +29,40 @@ class _MainScreenState extends State<MainScreen> {
     // const VocabularyPage(),
   ];
 
-  // Dictionary for AppBar titles
-  final Map<int, String> _appBarTitles = {
-    0: "Reader",
-    1: "Journal",
-    2: "Home",
-    3: "Note Taking",
-    4: "Vocabulary",
-  };
+  PreferredSizeWidget? buildAppBar(int index) {
+    final appBars = {
+      0: ReaderAppBar(
+        filters: const ["Reading", "Finished", "Favorites"],
+        selected: selectedFilter,
+        onFilterSelected: (filter) {
+          setState(() {
+            selectedFilter = filter;
+          });
+        },
+      ),
+      1: AppBar(
+        title: const Text('Journal'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      2: AppBar(
+        title: const Text("Dailylingo"),
+        actions: [
+          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+        ],
+      ),
+    };
 
-  // Dictionary for AppBar actions
-  final Map<int, List<Widget>> _appBarActions = {
-    0: [], // Reader
-    1: [
-      IconButton(icon: const Icon(Icons.calendar_today), onPressed: () {}),
-      IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
-    ],
-    2: [
-      IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
-    ],
-    3: [], // NoteTaking
-    4: [], // Vocabulary
-  };
+    return appBars[index];
+  }
 
   // Dictionary for FAB per tab
   final Map<int, FloatingActionButton> _fabs = {};
@@ -100,10 +93,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_appBarTitles[_currentIndex] ?? ""),
-        actions: _appBarActions[_currentIndex] ?? [],
-      ),
+      appBar: buildAppBar(_currentIndex),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,

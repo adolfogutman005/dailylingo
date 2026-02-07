@@ -3,26 +3,8 @@ import '../widgets/book_card.dart';
 import '../widgets/sort_bar.dart';
 import '../data/demo_data_books.dart';
 
-class ReaderPage extends StatefulWidget {
+class ReaderPage extends StatelessWidget {
   const ReaderPage({super.key});
-
-  @override
-  State<ReaderPage> createState() => _ReaderPageState();
-}
-
-class _ReaderPageState extends State<ReaderPage> {
-  String selectedFilter = "Reading";
-
-  final List<String> filters = ["Reading", "Finished", "Favorites"];
-
-  @override
-  Widget build(BuildContext context) {
-    return ReaderBody();
-  }
-}
-
-class ReaderBody extends StatelessWidget {
-  const ReaderBody({super.key});
 
   @override
   Widget build(BuildContext context) {
