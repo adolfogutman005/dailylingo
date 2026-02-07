@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'write_journal_page.dart';
 import 'journal_detail_page.dart';
+import '../PrimaryActionCard.dart';
 
 class JournalingPage extends StatefulWidget {
   const JournalingPage({super.key});
@@ -83,27 +84,7 @@ Sometimes slowing down is exactly what you need.''',
   // ---------- UI ----------
 
   Widget _startDailyJournaling() {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 320),
-        child: Container(
-          height: 80,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            color: Colors.blue.shade50,
-            border: Border.all(color: Colors.blue),
-          ),
-          child: const Text(
-            'Start Daily Journaling',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ),
-    );
+    return PrimaryActionCard(text: "Start Daily Journaling", onTap: () => {});
   }
 
   Widget _challengeRow() {
