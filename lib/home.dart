@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'journaling/journaling.dart';
 // import 'notetaking/note_taking_page.dart';
-// import 'vocabulary_page.dart';
+import 'vocabulary/vocabulary_page.dart';
 import 'reader/pages/reader_page.dart';
 import 'reader/widgets/reader_app_bar.dart';
 import 'journaling/write_journal_page.dart';
@@ -26,7 +26,8 @@ class _MainScreenState extends State<MainScreen> {
     const JournalingPage(),
     const HomePage(),
     // const NoteTakingPage(),
-    // const VocabularyPage(),
+
+    const VocabularyPage(),
   ];
 
   PreferredSizeWidget? buildAppBar(int index) {
@@ -57,6 +58,17 @@ class _MainScreenState extends State<MainScreen> {
         title: const Text("Dailylingo"),
         actions: [
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+        ],
+      ),
+      3: AppBar(
+        title: const Text("Vocabulary"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // TODO: open search
+            },
+          ),
         ],
       ),
     };
