@@ -39,7 +39,6 @@ class _VocabularyTab extends StatelessWidget {
       text: "Break down",
       translation: "Descomponer / Analizar",
       source: "Reading",
-      pronunciation: "break down",
       explanation: "To analyze something in detail.",
       examples: [
         "Let's break down this sentence.",
@@ -61,7 +60,6 @@ class _VocabularyTab extends StatelessWidget {
       text: "Outcome",
       translation: "Resultado",
       source: "General",
-      pronunciation: "outcome",
       examples: [
         "The outcome was unexpected.",
       ],

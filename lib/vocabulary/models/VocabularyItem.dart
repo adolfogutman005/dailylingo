@@ -1,9 +1,11 @@
 class VocabularyItem {
   final String id;
   final String text;
-  final String translation;
+  final DateTime createdAt;
+  final String language;
   final String source;
-  final String pronunciation;
+
+  final String translation;
 
   final String? explanation;
   final List<String> examples;
@@ -11,7 +13,6 @@ class VocabularyItem {
   final List<String> notes;
 
   final String status;
-  final DateTime createdAt;
   final DateTime? lastReviewed;
   final int timesPracticed;
 
@@ -20,12 +21,12 @@ class VocabularyItem {
     required this.text,
     required this.translation,
     required this.source,
-    required this.pronunciation,
     this.explanation,
     this.examples = const [],
     this.synonyms = const [],
     this.notes = const [],
     this.status = "new",
+    this.language = "English",
     required this.createdAt,
     this.lastReviewed,
     this.timesPracticed = 0,
