@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../PrimaryActionCard.dart';
-import '../models/VocabularyItem.dart';
+import '../models/vocabulary_item.dart';
 import '../widgets/VocabularyCard.dart';
 
 class VocabularyPage extends StatelessWidget {

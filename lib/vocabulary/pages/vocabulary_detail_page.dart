@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/VocabularyItem.dart';
+import '../models/vocabulary_item.dart';
 import '../widgets/detail_section.dart';
 
 class VocabularyDetailPage extends StatelessWidget {
