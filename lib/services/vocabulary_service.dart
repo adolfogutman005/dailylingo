@@ -9,11 +9,6 @@ class VocabularyService {
     _repo = VocabularyRepository(db);
   }
 
-  Future<void> debugPrintAllWords() async {
-    print("[VocabularyService] debugPrintAllWords called");
-    await _repo.debugPrintAllWords();
-  }
-
   Future<void> saveFromTranslator({
     required String text,
     required String sourceLang,
@@ -32,9 +27,19 @@ class VocabularyService {
     print("VocabularyService.saveFromTranslator finished saving: $text");
   }
 
+  Future<void> deleteWord(int wordId) async {
+    print("[VocabularyService] deleteWord called for wordId: $wordId");
+    await _repo.deleteWord(wordId);
+  }
+
   Stream<List<VocabularyItem>> watchVocabulary() {
     print("VocabularyService.watchVocabulary called");
 
     return _repo.watchAllVocabulary();
+  }
+
+  Future<void> debugPrintAllWords() async {
+    print("[VocabularyService] debugPrintAllWords called");
+    await _repo.debugPrintAllWords();
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/vocabulary_item.dart';
 import '../widgets/detail_section.dart';
+import '../../services/vocabulary_service.dart';
+import 'package:provider/provider.dart';
 
 class VocabularyDetailPage extends StatelessWidget {
   final VocabularyItem item;
@@ -9,6 +11,7 @@ class VocabularyDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final navigator = Navigator.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(item.text),
@@ -39,7 +42,63 @@ class VocabularyDetailPage extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed: () {},
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        height: 160,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Delete '${item.text}'?",
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                                "This will remove the word and all related information."),
+                            const Spacer(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  child: const Text("Cancel"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                const SizedBox(width: 8),
+                                ElevatedButton(
+                                  child: const Text("Delete"),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    navigator.pop(); // close modal
+                                    print(
+                                        "[UI] User confirmed delete for ${item.text}");
+                                    final vocabularyService =
+                                        Provider.of<VocabularyService>(context,
+                                            listen: false);
+                                    await vocabularyService
+                                        .deleteWord(int.parse(item.id));
+                                    print(
+                                        "[UI] Delete completed for ${item.text}");
+
+                                    navigator.pop();
+                                  },
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
