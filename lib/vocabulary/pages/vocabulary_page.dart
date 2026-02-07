@@ -48,6 +48,13 @@ class _VocabularyTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        ElevatedButton(
+          onPressed: () async {
+            print("[UI] Debug button pressed");
+            await vocabularyService.debugPrintAllWords();
+          },
+          child: const Text("Print all vocabulary in console"),
+        ),
         const SizedBox(height: 12),
         PrimaryActionCard(
           text: "Start Daily Journaling",

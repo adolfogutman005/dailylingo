@@ -55,6 +55,37 @@ class VocabularyRepository {
     });
   }
 
+  /// Debug method to print all vocabulary entries and related data
+  Future<void> debugPrintAllWords() async {
+    print("===== DEBUG: All Word Entries =====");
+    final words = await db.select(db.wordEntries).get();
+    for (final w in words) {
+      print(
+          "WordEntry: id=${w.id}, text='${w.wordText}', lang=${w.language}, source=${w.source}");
+    }
+
+    final translations = await db.select(db.translations).get();
+    print("===== DEBUG: All Translations =====");
+    for (final t in translations) {
+      print(
+          "Translation: wordId=${t.wordId}, lang=${t.language}, text='${t.translatedText}'");
+    }
+
+    final meanings = await db.select(db.wordMeanings).get();
+    print("===== DEBUG: All Meanings =====");
+    for (final m in meanings) {
+      print("Meaning: wordId=${m.wordId}, definition='${m.definition}'");
+    }
+
+    final notes = await db.select(db.wordNotes).get();
+    print("===== DEBUG: All Notes =====");
+    for (final n in notes) {
+      print("Note: wordId=${n.wordId}, note='${n.noteText}'");
+    }
+
+    print("===== DEBUG END =====");
+  }
+
   Stream<List<VocabularyItem>> watchAllVocabulary() {
     final query = db.select(db.wordEntries)
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);

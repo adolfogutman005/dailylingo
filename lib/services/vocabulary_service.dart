@@ -9,6 +9,11 @@ class VocabularyService {
     _repo = VocabularyRepository(db);
   }
 
+  Future<void> debugPrintAllWords() async {
+    print("[VocabularyService] debugPrintAllWords called");
+    await _repo.debugPrintAllWords();
+  }
+
   Future<void> saveFromTranslator({
     required String text,
     required String sourceLang,
