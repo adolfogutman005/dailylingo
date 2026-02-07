@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import '../../PrimaryActionCard.dart';
 import '../models/vocabulary_item.dart';
 import '../widgets/VocabularyCard.dart';
+import '../../services/vocabulary_service.dart';
+import 'package:provider/provider.dart';
 
 class VocabularyPage extends StatelessWidget {
-  const VocabularyPage({super.key});
+  const VocabularyPage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final vocabularyService =
+        Provider.of<VocabularyService>(context); // listen:true
+
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -21,7 +28,7 @@ class VocabularyPage extends StatelessWidget {
           Expanded(
             child: TabBarView(
               children: [
-                _VocabularyTab(),
+                _VocabularyTab(vocabularyService: vocabularyService),
                 const Center(child: Text("Coming Soon")),
               ],
             ),
@@ -33,43 +40,9 @@ class VocabularyPage extends StatelessWidget {
 }
 
 class _VocabularyTab extends StatelessWidget {
-  final List<VocabularyItem> dummyItems = [
-    VocabularyItem(
-      id: "1",
-      text: "Break down",
-      translation: "Descomponer / Analizar",
-      source: "Reading",
-      explanation: "To analyze something in detail.",
-      examples: [
-        "Let's break down this sentence.",
-        "Let's break down this concept.",
-      ],
-      synonyms: [
-        "analyze",
-        "decompose",
-      ],
-      notes: [
-        "Often used in explanations or teaching contexts.",
-        "Common in academic and technical English.",
-      ],
-      createdAt: DateTime.now(),
-      timesPracticed: 3,
-    ),
-    VocabularyItem(
-      id: "2",
-      text: "Outcome",
-      translation: "Resultado",
-      source: "General",
-      examples: [
-        "The outcome was unexpected.",
-      ],
-      notes: [
-        "More formal than 'result'.",
-      ],
-      createdAt: DateTime.now(),
-      timesPracticed: 1,
-    ),
-  ];
+  final VocabularyService vocabularyService;
+
+  const _VocabularyTab({required this.vocabularyService});
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +55,29 @@ class _VocabularyTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Expanded(
-          child: ListView.builder(
-            itemCount: dummyItems.length,
-            itemBuilder: (context, index) {
-              return VocabularyCard(item: dummyItems[index]);
+          child: StreamBuilder<List<VocabularyItem>>(
+            stream: vocabularyService.watchVocabulary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final items = snapshot.data ?? [];
+              print(
+                  "[StreamBuilder] received ${items.length} items from stream");
+
+              if (items.isEmpty) {
+                return const Center(
+                  child: Text("No vocabulary saved yet"),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return VocabularyCard(item: items[index]);
+                },
+              );
             },
           ),
         ),

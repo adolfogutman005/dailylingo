@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'state/user_settings_state.dart';
 import 'translator_service.dart';
+import 'services/vocabulary_service.dart';
 
 final Map<String, String> _langCodes = {
   "english": "EN",
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   // -------- SESSION STATE (TEMPORARY) --------
   late String currentSourceLang;
   late String currentTargetLang;
+  late VocabularyService vocabularyService;
 
   String sourceText = "";
   String targetText = "";
@@ -49,6 +51,14 @@ class _HomePageState extends State<HomePage> {
     final userSettings = context.read<UserSettingsState>();
     currentSourceLang = userSettings.settings.sourceLang;
     currentTargetLang = userSettings.settings.targetLang;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Initialize provider safely here (listen: true so widget rebuilds)
+    vocabularyService = Provider.of<VocabularyService>(context, listen: true);
   }
 
   @override
@@ -191,8 +201,22 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.bookmark),
-                    onPressed: () {},
+                    icon: const Icon(Icons.bookmark),
+                    onPressed: () async {
+                      await vocabularyService.saveFromTranslator(
+                        text: sourceText,
+                        sourceLang: currentSourceLang,
+                        targetLang: currentTargetLang,
+                        translatedText: targetText,
+                      );
+
+                      // Only show snackbar if widget is still mounted
+                      if (!mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Saved to vocabulary")),
+                      );
+                    },
                   ),
                   if (isSource)
                     IconButton(

@@ -1,5 +1,6 @@
 import '../data/database/app_database.dart';
 import '../data/repositories/vocabulary_repository.dart';
+import '../vocabulary/models/vocabulary_item.dart';
 
 class VocabularyService {
   late final VocabularyRepository _repo;
@@ -22,5 +23,13 @@ class VocabularyService {
       targetLang: targetLang,
       translatedText: translatedText,
     );
+
+    print("VocabularyService.saveFromTranslator finished saving: $text");
+  }
+
+  Stream<List<VocabularyItem>> watchVocabulary() {
+    print("VocabularyService.watchVocabulary called");
+
+    return _repo.watchAllVocabulary();
   }
 }
