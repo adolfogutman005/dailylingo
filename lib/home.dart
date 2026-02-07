@@ -180,7 +180,11 @@ class _HomePageState extends State<HomePage> {
                       });
                     })
                 : SelectableText(
-                    targetText.isEmpty ? "Translation" : targetText,
+                    targetText.isEmpty
+                        ? (_debounce?.isActive ?? false
+                            ? "Translating..."
+                            : "Translation")
+                        : targetText,
                   ),
 
             const SizedBox(height: 8),
