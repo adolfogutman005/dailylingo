@@ -1,6 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import 'state/user_settings_state.dart';
+import 'translator_service.dart';
+
+final Map<String, String> _langCodes = {
+  "english": "EN",
+  "spanish": "ES",
+  "french": "FR",
+  "german": "DE",
+  "portuguese": "PT",
+  "italian": "IT",
+  "chinese": "ZH",
+  "japanese": "JA",
+  "korean": "KO",
+  "arabic": "AR",
+};
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,6 +32,10 @@ class _HomePageState extends State<HomePage> {
   String sourceText = "";
   String targetText = "";
   DateTime selectedDate = DateTime.now();
+
+  Timer? _debounce;
+  final translationService =
+      TranslationService(apiKey: '253c4f2b-4394-4dcc-b808-82572df88046:fx');
 
   final TextEditingController sourceController = TextEditingController();
 
@@ -137,10 +156,29 @@ class _HomePageState extends State<HomePage> {
                     onChanged: (v) {
                       setState(() {
                         sourceText = v;
-                        targetText = ""; // placeholder
+                        targetText = ""; // clear previous translation
                       });
-                    },
-                  )
+
+                      // Debounce translation request
+                      if (_debounce?.isActive ?? false) _debounce!.cancel();
+                      _debounce =
+                          Timer(const Duration(milliseconds: 500), () async {
+                        if (sourceText.trim().isEmpty) return;
+
+                        final translated =
+                            await translationService.translateText(
+                          text: sourceText,
+                          targetLang: _deeplLangCode(currentTargetLang),
+                          // Optional: sourceLang: _deeplLangCode(currentSourceLang),
+                        );
+
+                        if (translated != null) {
+                          setState(() {
+                            targetText = translated;
+                          });
+                        }
+                      });
+                    })
                 : SelectableText(
                     targetText.isEmpty ? "Translation" : targetText,
                   ),
@@ -169,6 +207,10 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  String _deeplLangCode(String lang) {
+    return _langCodes[lang.toLowerCase()] ?? "EN"; // default to English
   }
 
   void _swapLanguages() {
