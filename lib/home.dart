@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'journaling/journaling.dart';
 // import 'notetaking/note_taking_page.dart';
-import 'vocabulary/vocabulary_page.dart';
+import 'vocabulary/pages/vocabulary_page.dart';
 import 'reader/pages/reader_page.dart';
 import 'reader/widgets/reader_app_bar.dart';
 import 'journaling/write_journal_page.dart';

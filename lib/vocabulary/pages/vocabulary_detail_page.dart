@@ -13,34 +13,87 @@ class VocabularyDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(item.text),
         actions: [
-          IconButton(icon: const Icon(Icons.volume_up), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.school), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.delete), onPressed: () {}),
+          TextButton(
+            onPressed: () {
+              // Save changes
+            },
+            child: const Text("Save"),
+          ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Chip(label: Text(item.source)),
+          /// Source + actions row
+          Row(
+            children: [
+              Chip(label: Text(item.source)),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.volume_up),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.school),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {},
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          DetailSection(title: "Translation", content: item.translation),
-          if (item.explanation != null)
-            DetailSection(title: "Explanation", content: item.explanation!),
-          if (item.examples.isNotEmpty)
-            DetailSection(
-              title: "Examples",
-              content: item.examples.join("\n\n"),
+
+          /// Metadata
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 20),
+            child: Text(
+              "Created: ${item.createdAt}\n"
+              "Times practiced: ${item.timesPracticed}\n"
+              "Last reviewed: ${item.lastReviewed ?? '—'}\n"
+              "Status: ${item.status}",
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+              ),
             ),
-          if (item.synonyms.isNotEmpty)
-            DetailSection(
-              title: "Synonyms",
-              content: item.synonyms.join(", "),
-            ),
-          if (item.notes != null)
-            DetailSection(title: "Notes", content: item.notes!),
+          ),
+
+          /// Sections
+          DetailSection(
+            title: "Translation",
+            content: item.translation,
+            actionIcon: Icons.edit,
+            onActionPressed: () {},
+          ),
+
+          DetailSection(
+            title: "Explanation",
+            content: item.explanation ?? "",
+            actionIcon: Icons.edit,
+            onActionPressed: () {},
+          ),
+
+          DetailSection(
+            title: "Examples",
+            content: item.examples.join("\n\n"),
+            actionIcon: Icons.add,
+            onActionPressed: () {},
+          ),
+
+          DetailSection(
+            title: "Synonyms",
+            content: item.synonyms.join(", "),
+            actionIcon: Icons.add,
+            onActionPressed: () {},
+          ),
+
+          DetailSection(
+            title: "Notes",
+            content: item.notes ?? "",
+            actionIcon: Icons.add,
+            onActionPressed: () {},
+          ),
         ],
       ),
     );
