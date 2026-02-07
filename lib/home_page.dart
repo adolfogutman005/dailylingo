@@ -190,6 +190,10 @@ class _HomePageState extends State<HomePage> {
                       ttsService.speak(textToSpeak, lang);
                     },
                   ),
+                  IconButton(
+                    icon: Icon(Icons.save),
+                    onPressed: () {},
+                  ),
                   if (isSource)
                     IconButton(
                       icon: const Icon(Icons.swap_horiz),
