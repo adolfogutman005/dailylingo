@@ -41,9 +41,20 @@ class _VocabularyTab extends StatelessWidget {
       source: "Reading",
       pronunciation: "break down",
       explanation: "To analyze something in detail.",
-      examples: ["Let's break down this sentence."],
-      synonyms: ["analyze", "decompose"],
+      examples: [
+        "Let's break down this sentence.",
+        "Let's break down this concept.",
+      ],
+      synonyms: [
+        "analyze",
+        "decompose",
+      ],
+      notes: [
+        "Often used in explanations or teaching contexts.",
+        "Common in academic and technical English.",
+      ],
       createdAt: DateTime.now(),
+      timesPracticed: 3,
     ),
     VocabularyItem(
       id: "2",
@@ -51,8 +62,14 @@ class _VocabularyTab extends StatelessWidget {
       translation: "Resultado",
       source: "General",
       pronunciation: "outcome",
-      examples: ["The outcome was unexpected."],
+      examples: [
+        "The outcome was unexpected.",
+      ],
+      notes: [
+        "More formal than 'result'.",
+      ],
       createdAt: DateTime.now(),
+      timesPracticed: 1,
     ),
   ];
 

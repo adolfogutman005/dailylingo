@@ -16,13 +16,21 @@ class DetailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isEmpty = content.trim().isEmpty;
+    final items = content
+        .split('\n')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    final bool isList = items.length > 1;
+    final bool isEmpty = items.isEmpty;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// Header
           Row(
             children: [
               Text(
@@ -39,24 +47,90 @@ class DetailSection extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: isEmpty
-                ? Text(
-                    "No $title yet",
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  )
-                : Text(content),
-          ),
+
+          /// Content
+          if (isEmpty)
+            _EmptyState(title: title)
+          else if (isList)
+            Column(
+              children: items.map((item) => _CapsuleItem(text: item)).toList(),
+            )
+          else
+            _SingleBlock(text: items.first),
         ],
+      ),
+    );
+  }
+}
+
+class _CapsuleItem extends StatelessWidget {
+  final String text;
+
+  const _CapsuleItem({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 14,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(30), // cylindrical
+        border: Border.all(
+          color: Colors.grey.shade300,
+        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 14),
+      ),
+    );
+  }
+}
+
+class _SingleBlock extends StatelessWidget {
+  final String text;
+
+  const _SingleBlock({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Text(text),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final String title;
+
+  const _EmptyState({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Text(
+        "No $title yet",
+        style: TextStyle(
+          color: Colors.grey.shade500,
+          fontStyle: FontStyle.italic,
+        ),
       ),
     );
   }

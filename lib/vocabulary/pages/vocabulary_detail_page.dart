@@ -83,14 +83,14 @@ class VocabularyDetailPage extends StatelessWidget {
 
           DetailSection(
             title: "Synonyms",
-            content: item.synonyms.join(", "),
+            content: item.synonyms.join("\n\n"),
             actionIcon: Icons.add,
             onActionPressed: () {},
           ),
 
           DetailSection(
             title: "Notes",
-            content: item.notes ?? "",
+            content: item.notes.join("\n"),
             actionIcon: Icons.add,
             onActionPressed: () {},
           ),
