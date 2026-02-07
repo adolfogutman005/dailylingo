@@ -1,3 +1,4 @@
+import 'package:dailylingo/speaking_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -38,6 +39,7 @@ class _HomePageState extends State<HomePage> {
       TranslationService(apiKey: '253c4f2b-4394-4dcc-b808-82572df88046:fx');
 
   final TextEditingController sourceController = TextEditingController();
+  final TtsService ttsService = TtsService();
 
   @override
   void initState() {
@@ -47,6 +49,14 @@ class _HomePageState extends State<HomePage> {
     final userSettings = context.read<UserSettingsState>();
     currentSourceLang = userSettings.settings.sourceLang;
     currentTargetLang = userSettings.settings.targetLang;
+  }
+
+  @override
+  void dispose() {
+    sourceController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+    ttsService.stop();
   }
 
   @override
@@ -198,7 +208,12 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.volume_up),
-                    onPressed: () {},
+                    onPressed: () {
+                      final textToSpeak = isSource ? sourceText : targetText;
+                      final lang =
+                          isSource ? currentSourceLang : currentTargetLang;
+                      ttsService.speak(textToSpeak, lang);
+                    },
                   ),
                   if (isSource)
                     IconButton(
