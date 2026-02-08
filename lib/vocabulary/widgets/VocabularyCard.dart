@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/vocabulary_item.dart';
 import '../pages/vocabulary_detail_page.dart';
+import '../../exercises_page.dart';
 
 class VocabularyCard extends StatelessWidget {
   final VocabularyItem item;
@@ -52,7 +53,12 @@ class VocabularyCard extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.school),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const PracticeItemPage()));
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
