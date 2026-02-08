@@ -3,12 +3,19 @@ import '../mappers/vocabulary_mapper.dart';
 import '../../vocabulary/models/vocabulary_item.dart';
 import 'package:drift/drift.dart';
 import '../../ai/gemini_ai.dart'; // <-- import your GeminiAI class
+import '../../translator_service.dart';
+import '../../language_codes.dart';
 
 class VocabularyRepository {
   final AppDatabase db;
   final GeminiAI ai;
+  final TranslationService translator;
 
-  VocabularyRepository(this.db, {required this.ai});
+  VocabularyRepository({
+    required this.db,
+    required this.ai,
+    required this.translator,
+  });
 
   Future<int> insertVocabulary({
     required String text,
@@ -17,6 +24,11 @@ class VocabularyRepository {
     required String targetLang,
   }) async {
     print("Repository: insertVocabulary starting for $text");
+
+    final translatedText = await translator.translateText(
+            text: text, targetLang: deeplLangCode(targetLang)) ??
+        '';
+    print('Fetched translation: $translatedText');
 
     // Fetch AI data in a single call
     final aiData = await ai.fetchPhraseFullData(
@@ -42,9 +54,10 @@ class VocabularyRepository {
             TranslationsCompanion.insert(
               wordId: wordId,
               language: targetLang,
-              translatedText: "Translated text dummy data",
+              translatedText: translatedText,
             ),
           );
+      ;
 
       // Insert AI explanation
       await db.into(db.wordMeanings).insert(

@@ -3,13 +3,17 @@ import 'package:dailylingo/ai/gemini_ai.dart';
 import '../data/database/app_database.dart';
 import '../data/repositories/vocabulary_repository.dart';
 import '../vocabulary/models/vocabulary_item.dart';
+import '../translator_service.dart';
 
 class VocabularyService {
   late final VocabularyRepository _repo;
-
+  final TranslationService translator =
+      TranslationService(apiKey: "253c4f2b-4394-4dcc-b808-82572df88046:fx");
   VocabularyService(AppDatabase db) {
-    _repo = VocabularyRepository(db,
-        ai: GeminiAI(apiKey: "AIzaSyAnmU3TTabtOMlnEc4MmRR7GYFmkP5jREo"));
+    _repo = VocabularyRepository(
+        db: db,
+        ai: GeminiAI(apiKey: "AIzaSyAnmU3TTabtOMlnEc4MmRR7GYFmkP5jREo"),
+        translator: translator);
   }
 
   Future<void> saveVocabulary({

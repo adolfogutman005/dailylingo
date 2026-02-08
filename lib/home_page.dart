@@ -5,19 +5,7 @@ import 'dart:async';
 import 'state/user_settings_state.dart';
 import 'translator_service.dart';
 import 'services/vocabulary_service.dart';
-
-final Map<String, String> _langCodes = {
-  "english": "EN",
-  "spanish": "ES",
-  "french": "FR",
-  "german": "DE",
-  "portuguese": "PT",
-  "italian": "IT",
-  "chinese": "ZH",
-  "japanese": "JA",
-  "korean": "KO",
-  "arabic": "AR",
-};
+import 'language_codes.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -163,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                         final translated =
                             await translationService.translateText(
                           text: sourceText,
-                          targetLang: _deeplLangCode(currentTargetLang),
+                          targetLang: deeplLangCode(currentTargetLang),
                           // Optional: sourceLang: _deeplLangCode(currentSourceLang),
                         );
 
@@ -230,10 +218,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  String _deeplLangCode(String lang) {
-    return _langCodes[lang.toLowerCase()] ?? "EN"; // default to English
   }
 
   void _swapLanguages() {
