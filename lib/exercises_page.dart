@@ -153,7 +153,6 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   }
 }
 
-// ================== EXERCISE CARD (WRAPPER) ==================
 class ExerciseCard extends StatelessWidget {
   final Exercise exercise;
   final Function(String) onAnswer;
