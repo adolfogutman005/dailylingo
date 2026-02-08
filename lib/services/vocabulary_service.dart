@@ -45,6 +45,26 @@ class VocabularyService {
     return _repo.watchAllVocabulary();
   }
 
+  Future<String> getWordText(int wordId) {
+    return _repo.getWordText(wordId);
+  }
+
+  Future<String> getPrimaryTranslation(int wordId) {
+    return _repo.getPrimaryTranslation(wordId);
+  }
+
+  Future<List<String>> getExamples(int wordId) {
+    return _repo.getExamples(wordId);
+  }
+
+  Future<String?> getDefinition(int wordId) {
+    return _repo.getDefinition(wordId);
+  }
+
+  Future<WordLearningDataData?> getLearningData(int wordId) {
+    return _repo.getLearningData(wordId);
+  }
+
   Future<void> debugPrintAllWords() async {
     print("[VocabularyService] debugPrintAllWords called");
     await _repo.debugPrintAllWords();
