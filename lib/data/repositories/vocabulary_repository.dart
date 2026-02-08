@@ -13,7 +13,6 @@ class VocabularyRepository {
     required String source,
     required String sourceLang,
     required String targetLang,
-    required String translatedText,
   }) async {
     print("Repository: insertVocabulary starting for $text");
 
@@ -33,7 +32,7 @@ class VocabularyRepository {
             TranslationsCompanion.insert(
               wordId: wordId,
               language: targetLang,
-              translatedText: translatedText,
+              translatedText: "Translated text dummy data",
             ),
           );
 

@@ -14,16 +14,14 @@ class VocabularyService {
     required String source,
     required String sourceLang,
     required String targetLang,
-    required String translatedText,
   }) async {
-    if (text.trim().isEmpty || translatedText.trim().isEmpty) return;
+    if (text.trim().isEmpty) return;
 
     await _repo.insertVocabulary(
       text: text,
       source: source,
       sourceLang: sourceLang,
       targetLang: targetLang,
-      translatedText: translatedText,
     );
 
     print("VocabularyService.saveFromTranslator finished saving: $text");

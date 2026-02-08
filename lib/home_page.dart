@@ -208,7 +208,6 @@ class _HomePageState extends State<HomePage> {
                         source: 'translator',
                         sourceLang: currentSourceLang,
                         targetLang: currentTargetLang,
-                        translatedText: targetText,
                       );
 
                       // Only show snackbar if widget is still mounted

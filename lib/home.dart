@@ -96,7 +96,37 @@ class _MainScreenState extends State<MainScreen> {
 
     _fabs[2] = FloatingActionButton(
       onPressed: () {
-        // Push to write note page
+        showDialog(
+          context: context,
+          builder: (context) {
+            final TextEditingController _controller = TextEditingController();
+            return AlertDialog(
+              title: const Text("Add Word or Phrase"),
+              content: TextField(
+                controller: _controller,
+                decoration: const InputDecoration(
+                  hintText: "Enter word or phrase",
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(), // Close dialog
+                  child: const Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    String inputText = _controller.text.trim();
+                    if (inputText.isNotEmpty) {
+                      Navigator.of(context).pop(); // Close dialog
+                      _controller.clear(); // Clear text
+                    }
+                  },
+                  child: const Text("Save"),
+                ),
+              ],
+            );
+          },
+        );
       },
       child: const Icon(Icons.add),
     );
