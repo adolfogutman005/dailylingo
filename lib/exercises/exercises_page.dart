@@ -19,7 +19,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   bool? lastAnswerCorrect; // null = unanswered, true/false = result
   String? lastCorrectAnswer;
 
-  late List<Exercise> exercises;
+  List<Exercise> exercises = [];
 
   final GlobalKey<WriteAnswerWidgetState> _writeKey =
       GlobalKey<WriteAnswerWidgetState>();
@@ -81,6 +81,14 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (exercises.isEmpty) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     final exercise = exercises[currentExerciseIndex];
     final progress = (currentExerciseIndex + 1) / exercises.length;
 
@@ -326,5 +334,3 @@ class SessionSummaryPage extends StatelessWidget {
     );
   }
 }
-
-// ================== EXERCISE MODELS ==================

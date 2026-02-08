@@ -66,12 +66,12 @@ class ExerciseTemplates {
     final word = await vocab.getWordText(wordId);
     final correct = await vocab.getDefinition(wordId) ?? 'Unknown meaning';
 
-    // Dummy AI data
+    // AI-generated wrong options
+    final distractors = await vocab.getDefinitionDistractors(wordId);
+
     final options = [
       correct,
-      'To run very fast',
-      'To forget something',
-      'A physical object',
+      ...distractors.take(3),
     ]..shuffle();
 
     return Exercise.fourOptions(

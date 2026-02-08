@@ -62,7 +62,7 @@ Correct definition: "$correctDefinition"
 Generate exactly 3 incorrect but plausible definitions.
 They must be clearly wrong, but realistic.
 Do NOT repeat the correct definition.
-
+Ensure one of the distractors is the definition of an antonym
 Return ONLY valid JSON in this format:
 
 {
