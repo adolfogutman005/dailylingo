@@ -45,6 +45,10 @@ class VocabularyService {
     return _repo.watchAllVocabulary();
   }
 
+  Future<List<int>> getAllWordIds() {
+    return _repo.getAllWordIds();
+  }
+
   Future<String> getWordText(int wordId) {
     return _repo.getWordText(wordId);
   }
