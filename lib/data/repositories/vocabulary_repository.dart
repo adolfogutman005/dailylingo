@@ -155,6 +155,11 @@ class VocabularyRepository {
     });
   }
 
+  Future<List<int>> getAllWordIds() async {
+    final rows = await db.select(db.wordEntries).get();
+    return rows.map((e) => e.id).toList();
+  }
+
   Future<String> getWordText(int wordId) async {
     final word = await (db.select(db.wordEntries)
           ..where((w) => w.id.equals(wordId)))

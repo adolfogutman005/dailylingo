@@ -50,7 +50,7 @@ class _VocabularyTab extends StatelessWidget {
       children: [
         const SizedBox(height: 12),
         PrimaryActionCard(
-          text: "Start Daily Journaling",
+          text: "Start Vocabulary Practice",
           onTap: () {},
         ),
         const SizedBox(height: 12),
