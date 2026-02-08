@@ -1,5 +1,5 @@
 class VocabularyItem {
-  final String id;
+  final int id;
   final String text;
   final DateTime createdAt;
   final String language;

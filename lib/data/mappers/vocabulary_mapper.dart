@@ -11,7 +11,7 @@ VocabularyItem mapToVocabularyItem({
   WordLearningDataData? learning,
 }) {
   return VocabularyItem(
-    id: word.id.toString(),
+    id: word.id,
     text: word.wordText,
     language: word.language,
     source: word.source,

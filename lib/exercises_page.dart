@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'exercise.dart';
+import 'package:provider/provider.dart';
+import 'services/vocabulary_service.dart';
+import 'practice_service.dart';
 
 class PracticeItemPage extends StatefulWidget {
-  const PracticeItemPage({super.key});
+  final int wordId;
+
+  const PracticeItemPage({super.key, required this.wordId});
 
   @override
   State<PracticeItemPage> createState() => _PracticeItemPageState();
@@ -17,33 +23,19 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   @override
   void initState() {
     super.initState();
-
+    _loadExercises();
     // Dummy data
-    exercises = [
-      Exercise.fourOptions(
-        question: 'Translate: Break down',
-        options: ['analizar', 'romper', 'descomponer', 'terminar'],
-        answer: 'descomponer',
-      ),
-      Exercise.writeAnswer(
-        question: 'Write the meaning of "Analyze"',
-        answer: 'analizar',
-      ),
-      Exercise.fourOptions(
-        question: 'Translate: Understand',
-        options: ['comprender', 'olvidar', 'romper', 'correr'],
-        answer: 'comprender',
-      ),
-      Exercise.writeAnswer(
-        question: 'Write the meaning of "Break down"',
-        answer: 'descomponer',
-        possibleAnswers: [
-          'descomponer',
-          'analizar',
-          'examinar'
-        ], // synonyms or examples
-      )
-    ];
+  }
+
+  Future<void> _loadExercises() async {
+    final vocab = Provider.of<VocabularyService>(context, listen: false);
+    final practice = PracticeService(vocab);
+
+    final list = await practice.getItemExercises(widget.wordId);
+
+    setState(() {
+      exercises = list;
+    });
   }
 
   void handleAnswer(String userAnswer) {
@@ -121,26 +113,38 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    lastAnswerCorrect!
-                        ? Row(
-                            children: const [
-                              Icon(Icons.check, color: Colors.green),
-                              SizedBox(width: 8),
-                              Text('Correct!', style: TextStyle(fontSize: 16)),
-                            ],
-                          )
-                        : Row(
-                            children: [
-                              const Icon(Icons.close, color: Colors.red),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Incorrect! (${lastCorrectAnswer})',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
+                    Expanded(
+                      child: lastAnswerCorrect!
+                          ? Row(
+                              children: const [
+                                Icon(Icons.check, color: Colors.green),
+                                SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    'Correct!',
+                                    style: TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                const Icon(Icons.close, color: Colors.red),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    'Incorrect! (${lastCorrectAnswer})',
+                                    style: const TextStyle(fontSize: 16),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                    const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: nextExercise,
                       child: const Text('Next'),
@@ -272,46 +276,3 @@ class SessionSummaryPage extends StatelessWidget {
 }
 
 // ================== EXERCISE MODELS ==================
-enum ExerciseType { fourOptions, writeAnswer }
-
-class Exercise {
-  final ExerciseType type;
-  final String question;
-  final List<String>? options;
-  final String answer;
-  final List<String> possibleAnswers; // <-- add this
-
-  Exercise({
-    required this.type,
-    required this.question,
-    required this.answer,
-    this.options,
-    List<String>? possibleAnswers,
-  }) : possibleAnswers = possibleAnswers ?? [answer]; // default = answer only
-
-  factory Exercise.fourOptions({
-    required String question,
-    required List<String> options,
-    required String answer,
-    List<String>? possibleAnswers,
-  }) =>
-      Exercise(
-        type: ExerciseType.fourOptions,
-        question: question,
-        options: options,
-        answer: answer,
-        possibleAnswers: possibleAnswers,
-      );
-
-  factory Exercise.writeAnswer({
-    required String question,
-    required String answer,
-    List<String>? possibleAnswers,
-  }) =>
-      Exercise(
-        type: ExerciseType.writeAnswer,
-        question: question,
-        answer: answer,
-        possibleAnswers: possibleAnswers,
-      );
-}

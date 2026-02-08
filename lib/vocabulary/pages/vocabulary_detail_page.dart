@@ -83,8 +83,7 @@ class VocabularyDetailPage extends StatelessWidget {
                                     final vocabularyService =
                                         Provider.of<VocabularyService>(context,
                                             listen: false);
-                                    await vocabularyService
-                                        .deleteWord(int.parse(item.id));
+                                    await vocabularyService.deleteWord(item.id);
                                     print(
                                         "[UI] Delete completed for ${item.text}");
 

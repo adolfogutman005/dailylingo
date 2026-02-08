@@ -57,7 +57,7 @@ class VocabularyCard extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => const PracticeItemPage()));
+                          builder: (_) => PracticeItemPage(wordId: item.id)));
                 },
               ),
               IconButton(
