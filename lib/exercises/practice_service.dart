@@ -34,7 +34,9 @@ class PracticeService {
 
     final builders = [
       ExerciseTemplates.writeTargetTranslation,
+      ExerciseTemplates.writeTranslation,
       ExerciseTemplates.pickWordFromDefinition,
+      ExerciseTemplates.fillInTheBlank,
       ExerciseTemplates.fillInTheBlank,
     ];
 
