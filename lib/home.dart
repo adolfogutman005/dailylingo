@@ -8,6 +8,8 @@ import 'reader/pages/reader_page.dart';
 import 'reader/widgets/reader_app_bar.dart';
 import 'journaling/write_journal_page.dart';
 // import 'journaling/write_note_page.dart';
+import 'services/vocabulary_service.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -94,42 +96,8 @@ class _MainScreenState extends State<MainScreen> {
       child: const Icon(Icons.edit),
     );
 
-    _fabs[2] = FloatingActionButton(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            final TextEditingController _controller = TextEditingController();
-            return AlertDialog(
-              title: const Text("Add Word or Phrase"),
-              content: TextField(
-                controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: "Enter word or phrase",
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(), // Close dialog
-                  child: const Text("Cancel"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    String inputText = _controller.text.trim();
-                    if (inputText.isNotEmpty) {
-                      Navigator.of(context).pop(); // Close dialog
-                      _controller.clear(); // Clear text
-                    }
-                  },
-                  child: const Text("Save"),
-                ),
-              ],
-            );
-          },
-        );
-      },
-      child: const Icon(Icons.add),
-    );
+    _fabs[2] = generalFAB(context: context);
+    _fabs[3] = generalFAB(context: context);
   }
 
   @override
@@ -157,4 +125,53 @@ class _MainScreenState extends State<MainScreen> {
       floatingActionButton: _fabs[_currentIndex],
     );
   }
+}
+
+FloatingActionButton generalFAB({
+  required BuildContext context,
+}) {
+  return FloatingActionButton(
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) {
+          final TextEditingController _controller = TextEditingController();
+          final vocabularyService =
+              Provider.of<VocabularyService>(context, listen: false);
+
+          return AlertDialog(
+            title: const Text("Add Word or Phrase"),
+            content: TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                hintText: "Enter word or phrase",
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(), // Close dialog
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String inputText = _controller.text.trim();
+                  if (inputText.isNotEmpty) {
+                    await vocabularyService.saveVocabulary(
+                        text: inputText,
+                        source: 'General',
+                        sourceLang: 'English',
+                        targetLang: 'Spanish');
+                    Navigator.of(context).pop();
+                    // TODO: Use user settings languages                      _controller.clear(); // Clear text
+                  }
+                },
+                child: const Text("Save"),
+              ),
+            ],
+          );
+        },
+      );
+    },
+    child: const Icon(Icons.add),
+  );
 }
