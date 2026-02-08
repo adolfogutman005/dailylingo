@@ -48,3 +48,29 @@ Instructions:
 4. Respond **ONLY with valid JSON**, no extra text, logs, quotes, fences, or markdown.
 5. Do not return any JSON formatting like  ```json. Just the plain JSON object 
 """;
+
+String definitionDistractorsPrompt({
+  required String word,
+  required String correctDefinition,
+}) {
+  return '''
+You are helping create a vocabulary multiple-choice exercise.
+
+Word: "$word"
+Correct definition: "$correctDefinition"
+
+Generate exactly 3 incorrect but plausible definitions.
+They must be clearly wrong, but realistic.
+Do NOT repeat the correct definition.
+
+Return ONLY valid JSON in this format:
+
+{
+  "distractors": [
+    "definition 1",
+    "definition 2",
+    "definition 3"
+  ]
+}
+''';
+}

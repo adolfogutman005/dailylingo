@@ -65,6 +65,20 @@ class VocabularyService {
     return _repo.getLearningData(wordId);
   }
 
+  Future<List<String>> getDefinitionDistractors(int wordId) async {
+    final word = await getWordText(wordId);
+    final correct = await getDefinition(wordId);
+
+    if (correct == null || correct.isEmpty) {
+      return [];
+    }
+
+    return _repo.generateDefinitionDistractors(
+      word: word,
+      correctDefinition: correct,
+    );
+  }
+
   Future<void> debugPrintAllWords() async {
     print("[VocabularyService] debugPrintAllWords called");
     await _repo.debugPrintAllWords();

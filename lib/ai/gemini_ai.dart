@@ -78,6 +78,32 @@ class GeminiAI {
       };
     }
   }
+
+  Future<List<String>> generateDefinitionDistractors({
+    required String word,
+    required String correctDefinition,
+  }) async {
+    final prompt = definitionDistractorsPrompt(
+      word: word,
+      correctDefinition: correctDefinition,
+    );
+
+    final raw = await _callGemini(prompt);
+
+    try {
+      final jsonString = extractFirstJsonObject(raw);
+      final parsed = jsonDecode(jsonString);
+
+      final distractors = (parsed['distractors'] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList();
+
+      return distractors;
+    } catch (e) {
+      print('Error parsing distractors: $e\nRaw:\n$raw');
+      return [];
+    }
+  }
 }
 
 /// Extracts the first JSON object from a string

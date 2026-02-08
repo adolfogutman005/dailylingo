@@ -189,6 +189,18 @@ class VocabularyRepository {
         .getSingleOrNull();
   }
 
+  Future<List<String>> generateDefinitionDistractors({
+    required String word,
+    required String correctDefinition,
+  }) async {
+    final result = await ai.generateDefinitionDistractors(
+      word: word,
+      correctDefinition: correctDefinition,
+    );
+
+    return result;
+  }
+
   Future<void> debugPrintAllWords() async {
     print("===== DEBUG: All Word Entries =====");
     final words = await db.select(db.wordEntries).get();
