@@ -8,13 +8,14 @@ class VocabularyRepository {
 
   VocabularyRepository(this.db);
 
-  Future<int> insertFromTranslator({
+  Future<int> insertVocabulary({
     required String text,
+    required String source,
     required String sourceLang,
     required String targetLang,
     required String translatedText,
   }) async {
-    print("Repository: insertFromTranslator starting for $text");
+    print("Repository: insertVocabulary starting for $text");
 
     return await db.transaction(() async {
       final wordId = await db.into(db.wordEntries).insert(

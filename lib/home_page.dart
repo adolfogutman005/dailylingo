@@ -203,8 +203,9 @@ class _HomePageState extends State<HomePage> {
                   IconButton(
                     icon: const Icon(Icons.bookmark),
                     onPressed: () async {
-                      await vocabularyService.saveFromTranslator(
+                      await vocabularyService.saveVocabulary(
                         text: sourceText,
+                        source: 'translator',
                         sourceLang: currentSourceLang,
                         targetLang: currentTargetLang,
                         translatedText: targetText,

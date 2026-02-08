@@ -9,16 +9,18 @@ class VocabularyService {
     _repo = VocabularyRepository(db);
   }
 
-  Future<void> saveFromTranslator({
+  Future<void> saveVocabulary({
     required String text,
+    required String source,
     required String sourceLang,
     required String targetLang,
     required String translatedText,
   }) async {
     if (text.trim().isEmpty || translatedText.trim().isEmpty) return;
 
-    await _repo.insertFromTranslator(
+    await _repo.insertVocabulary(
       text: text,
+      source: source,
       sourceLang: sourceLang,
       targetLang: targetLang,
       translatedText: translatedText,
