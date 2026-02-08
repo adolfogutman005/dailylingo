@@ -34,12 +34,21 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
         options: ['comprender', 'olvidar', 'romper', 'correr'],
         answer: 'comprender',
       ),
+      Exercise.writeAnswer(
+        question: 'Write the meaning of "Break down"',
+        answer: 'descomponer',
+        possibleAnswers: [
+          'descomponer',
+          'analizar',
+          'examinar'
+        ], // synonyms or examples
+      )
     ];
   }
 
   void handleAnswer(String userAnswer) {
-    bool isCorrect = userAnswer.toLowerCase() ==
-        exercises[currentExerciseIndex].answer.toLowerCase();
+    bool isCorrect = exercises[currentExerciseIndex].possibleAnswers.any(
+        (ans) => ans.toLowerCase().trim() == userAnswer.toLowerCase().trim());
 
     setState(() {
       lastAnswerCorrect = isCorrect;
@@ -271,29 +280,39 @@ class Exercise {
   final String question;
   final List<String>? options;
   final String answer;
+  final List<String> possibleAnswers; // <-- add this
 
   Exercise({
     required this.type,
     required this.question,
     required this.answer,
     this.options,
-  });
+    List<String>? possibleAnswers,
+  }) : possibleAnswers = possibleAnswers ?? [answer]; // default = answer only
 
   factory Exercise.fourOptions({
     required String question,
     required List<String> options,
     required String answer,
+    List<String>? possibleAnswers,
   }) =>
       Exercise(
-          type: ExerciseType.fourOptions,
-          question: question,
-          options: options,
-          answer: answer);
+        type: ExerciseType.fourOptions,
+        question: question,
+        options: options,
+        answer: answer,
+        possibleAnswers: possibleAnswers,
+      );
 
   factory Exercise.writeAnswer({
     required String question,
     required String answer,
+    List<String>? possibleAnswers,
   }) =>
       Exercise(
-          type: ExerciseType.writeAnswer, question: question, answer: answer);
+        type: ExerciseType.writeAnswer,
+        question: question,
+        answer: answer,
+        possibleAnswers: possibleAnswers,
+      );
 }
