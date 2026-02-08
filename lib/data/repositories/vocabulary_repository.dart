@@ -155,6 +155,40 @@ class VocabularyRepository {
     });
   }
 
+  Future<String> getWordText(int wordId) async {
+    final word = await (db.select(db.wordEntries)
+          ..where((w) => w.id.equals(wordId)))
+        .getSingle();
+    return word.wordText;
+  }
+
+  Future<String> getPrimaryTranslation(int wordId) async {
+    final translation = await (db.select(db.translations)
+          ..where((t) => t.wordId.equals(wordId)))
+        .getSingle();
+    return translation.translatedText;
+  }
+
+  Future<List<String>> getExamples(int wordId) async {
+    final rows = await (db.select(db.wordExamples)
+          ..where((e) => e.wordId.equals(wordId)))
+        .get();
+    return rows.map((e) => e.exampleText).toList();
+  }
+
+  Future<String?> getDefinition(int wordId) async {
+    final row = await (db.select(db.wordMeanings)
+          ..where((m) => m.wordId.equals(wordId)))
+        .getSingleOrNull();
+    return row?.definition;
+  }
+
+  Future<WordLearningDataData?> getLearningData(int wordId) async {
+    return await (db.select(db.wordLearningData)
+          ..where((l) => l.wordId.equals(wordId)))
+        .getSingleOrNull();
+  }
+
   Future<void> debugPrintAllWords() async {
     print("===== DEBUG: All Word Entries =====");
     final words = await db.select(db.wordEntries).get();
