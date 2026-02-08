@@ -1,6 +1,7 @@
 import '../../services/vocabulary_service.dart';
 import 'exercise.dart';
 import 'practice_levels.dart';
+import 'exercises_templates.dart';
 
 class PracticeService {
   final VocabularyService vocab;
@@ -21,5 +22,32 @@ class PracticeService {
     if (times < 3) return 1;
     if (times < 7) return 2;
     return 3;
+  }
+
+  Future<List<Exercise>> startRandomSession({int count = 5}) async {
+    final allWordIds = await vocab.getAllWordIds();
+
+    if (allWordIds.isEmpty) return [];
+
+    allWordIds.shuffle();
+    final selected = allWordIds.take(count).toList();
+
+    final builders = [
+      ExerciseTemplates.writeTargetTranslation,
+      ExerciseTemplates.pickWordFromDefinition,
+      ExerciseTemplates.fillInTheBlank,
+    ];
+
+    final exercises = <Exercise>[];
+
+    for (int i = 0; i < selected.length; i++) {
+      final builder = builders[i % builders.length];
+
+      exercises.add(
+        await builder(vocab, selected[i]),
+      );
+    }
+
+    return exercises;
   }
 }

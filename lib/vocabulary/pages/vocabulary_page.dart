@@ -4,6 +4,8 @@ import '../models/vocabulary_item.dart';
 import '../widgets/VocabularyCard.dart';
 import '../../services/vocabulary_service.dart';
 import 'package:provider/provider.dart';
+import '../../exercises/practice_service.dart';
+import '../../exercises/exercises_session_page.dart';
 
 class VocabularyPage extends StatelessWidget {
   const VocabularyPage({
@@ -51,7 +53,21 @@ class _VocabularyTab extends StatelessWidget {
         const SizedBox(height: 12),
         PrimaryActionCard(
           text: "Start Vocabulary Practice",
-          onTap: () {},
+          onTap: () async {
+            final vocab = context.read<VocabularyService>();
+            final practice = PracticeService(vocab);
+
+            final exercises = await practice.startRandomSession();
+
+            if (!context.mounted || exercises.isEmpty) return;
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => PracticeSessionPage(exercises: exercises),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 12),
         Expanded(

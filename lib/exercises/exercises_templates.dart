@@ -80,4 +80,62 @@ class ExerciseTemplates {
       answer: correct,
     );
   }
+
+  static Future<Exercise> pickWordFromDefinition(
+    VocabularyService vocab,
+    int wordId,
+  ) async {
+    final word = await vocab.getWordText(wordId);
+    final definition = await vocab.getDefinition(wordId) ?? 'Unknown meaning';
+
+    final allIds = await vocab.getAllWordIds();
+    allIds.remove(wordId);
+    allIds.shuffle();
+
+    final distractors = <String>[];
+    for (final id in allIds.take(3)) {
+      distractors.add(await vocab.getWordText(id));
+    }
+
+    final options = [word, ...distractors]..shuffle();
+
+    return Exercise.fourOptions(
+      question: 'Which word matches this definition?\n\n"$definition"',
+      options: options,
+      answer: word,
+    );
+  }
+
+  static Future<Exercise> fillInTheBlank(
+    VocabularyService vocab,
+    int wordId,
+  ) async {
+    final word = await vocab.getWordText(wordId);
+    final examples = await vocab.getExamples(wordId);
+
+    if (examples.isEmpty) {
+      return writeTargetTranslation(vocab, wordId);
+    }
+
+    final sentence = examples.first;
+    final blankSentence =
+        sentence.replaceAll(RegExp(word, caseSensitive: false), '_____');
+
+    final allIds = await vocab.getAllWordIds();
+    allIds.remove(wordId);
+    allIds.shuffle();
+
+    final distractors = <String>[];
+    for (final id in allIds.take(3)) {
+      distractors.add(await vocab.getWordText(id));
+    }
+
+    final options = [word, ...distractors]..shuffle();
+
+    return Exercise.fourOptions(
+      question: 'Fill in the blank:\n\n$blankSentence',
+      options: options,
+      answer: word,
+    );
+  }
 }

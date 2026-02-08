@@ -6,9 +6,10 @@ import '../services/vocabulary_service.dart';
 import 'practice_service.dart';
 
 class PracticeItemPage extends StatefulWidget {
-  final int wordId;
+  final int? wordId;
+  final List<Exercise>? exercisesOverride;
 
-  const PracticeItemPage({super.key, required this.wordId});
+  const PracticeItemPage({super.key, this.wordId, this.exercisesOverride});
 
   @override
   State<PracticeItemPage> createState() => _PracticeItemPageState();
@@ -27,15 +28,19 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   @override
   void initState() {
     super.initState();
-    _loadExercises();
-    // Dummy data
+
+    if (widget.exercisesOverride != null) {
+      exercises = widget.exercisesOverride!;
+    } else {
+      _loadExercises(widget.wordId!);
+    }
   }
 
-  Future<void> _loadExercises() async {
+  Future<void> _loadExercises(int wordId) async {
     final vocab = Provider.of<VocabularyService>(context, listen: false);
     final practice = PracticeService(vocab);
 
-    final list = await practice.getItemExercises(widget.wordId);
+    final list = await practice.getItemExercises(wordId);
 
     setState(() {
       exercises = list;
