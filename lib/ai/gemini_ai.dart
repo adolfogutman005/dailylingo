@@ -104,6 +104,38 @@ class GeminiAI {
       return [];
     }
   }
+
+  Future<Map<String, dynamic>> generateFillInTheBlank({
+    required String word,
+    required String language,
+  }) async {
+    final prompt = fillInTheBlankPrompt(
+      word: word,
+      language: language,
+    );
+
+    final raw = await _callGemini(prompt);
+
+    try {
+      final jsonString = extractFirstJsonObject(raw);
+      final parsed = jsonDecode(jsonString);
+
+      return {
+        'sentence': parsed['sentence']?.toString() ?? '',
+        'correct': parsed['correct']?.toString() ?? '',
+        'distractors': (parsed['distractors'] as List<dynamic>? ?? [])
+            .map((e) => e.toString())
+            .toList(),
+      };
+    } catch (e) {
+      print('[GeminiAI] Fill-in-the-blank parsing failed: $e');
+      return {
+        'sentence': '',
+        'correct': '',
+        'distractors': <String>[],
+      };
+    }
+  }
 }
 
 /// Extracts the first JSON object from a string

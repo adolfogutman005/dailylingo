@@ -74,3 +74,34 @@ Return ONLY valid JSON in this format:
 }
 ''';
 }
+
+String fillInTheBlankPrompt({
+  required String word,
+  required String language,
+}) {
+  return '''
+You are creating a language-learning exercise.
+
+Task:
+- Create ONE natural sentence in $language.
+- Replace the target word/s with "____".
+- Provide the correct word/s.
+- Provide 3 plausible but incorrect distractors.
+
+Rules:
+- The sentence must be realistic and common.
+- The blank must be replaceable by the correct word or phrase expression provided.
+- Distractors must be grammatically valid but incorrect. They wouldn't make sense in a real situation
+- Output ONLY valid JSON.
+- Do NOT include explanations.
+
+JSON format:
+{
+  "sentence": "... ____ ...",
+  "correct": "...",
+  "distractors": ["...", "...", "..."]
+}
+
+Target word/phrase: "$word"
+''';
+}

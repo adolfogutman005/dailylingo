@@ -206,6 +206,16 @@ class VocabularyRepository {
     return result;
   }
 
+  Future<Map<String, dynamic>> generateFillInTheBlank({
+    required String word,
+    required String language,
+  }) {
+    return ai.generateFillInTheBlank(
+      word: word,
+      language: language,
+    );
+  }
+
   Future<void> debugPrintAllWords() async {
     print("===== DEBUG: All Word Entries =====");
     final words = await db.select(db.wordEntries).get();

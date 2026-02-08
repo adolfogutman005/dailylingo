@@ -110,32 +110,23 @@ class ExerciseTemplates {
     VocabularyService vocab,
     int wordId,
   ) async {
-    final word = await vocab.getWordText(wordId);
-    final examples = await vocab.getExamples(wordId);
+    final data = await vocab.getFillInTheBlankData(wordId);
 
-    if (examples.isEmpty) {
+    final sentence = data['sentence'] as String;
+    final correct = data['correct'] as String;
+    final distractors = List<String>.from(data['distractors']);
+
+    if (sentence.isEmpty || correct.isEmpty || distractors.length < 3) {
+      // Fallback if AI fails
       return writeTargetTranslation(vocab, wordId);
     }
 
-    final sentence = examples.first;
-    final blankSentence =
-        sentence.replaceAll(RegExp(word, caseSensitive: false), '_____');
-
-    final allIds = await vocab.getAllWordIds();
-    allIds.remove(wordId);
-    allIds.shuffle();
-
-    final distractors = <String>[];
-    for (final id in allIds.take(3)) {
-      distractors.add(await vocab.getWordText(id));
-    }
-
-    final options = [word, ...distractors]..shuffle();
+    final options = [correct, ...distractors]..shuffle();
 
     return Exercise.fourOptions(
-      question: 'Fill in the blank:\n\n$blankSentence',
+      question: 'Fill in the blank:\n\n$sentence',
       options: options,
-      answer: word,
+      answer: correct,
     );
   }
 }

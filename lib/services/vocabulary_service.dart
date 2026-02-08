@@ -83,6 +83,18 @@ class VocabularyService {
     );
   }
 
+  Future<Map<String, dynamic>> getFillInTheBlankData(int wordId) async {
+    final word = await getWordText(wordId);
+
+    // You may later fetch language from DB if needed
+    const language = 'English';
+
+    return _repo.generateFillInTheBlank(
+      word: word,
+      language: language,
+    );
+  }
+
   Future<void> debugPrintAllWords() async {
     print("[VocabularyService] debugPrintAllWords called");
     await _repo.debugPrintAllWords();
