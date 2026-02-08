@@ -1,3 +1,5 @@
+import 'package:dailylingo/ai/gemini_ai.dart';
+
 import '../data/database/app_database.dart';
 import '../data/repositories/vocabulary_repository.dart';
 import '../vocabulary/models/vocabulary_item.dart';
@@ -6,7 +8,8 @@ class VocabularyService {
   late final VocabularyRepository _repo;
 
   VocabularyService(AppDatabase db) {
-    _repo = VocabularyRepository(db);
+    _repo = VocabularyRepository(db,
+        ai: GeminiAI(apiKey: "AIzaSyAnmU3TTabtOMlnEc4MmRR7GYFmkP5jREo"));
   }
 
   Future<void> saveVocabulary({

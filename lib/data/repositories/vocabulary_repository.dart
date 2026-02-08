@@ -2,12 +2,15 @@ import '../database/app_database.dart';
 import '../mappers/vocabulary_mapper.dart';
 import '../../vocabulary/models/vocabulary_item.dart';
 import 'package:drift/drift.dart';
+import '../../ai/gemini_ai.dart'; // <-- import your GeminiAI class
 
 class VocabularyRepository {
   final AppDatabase db;
+  final GeminiAI ai; // <-- inject GeminiAI
 
-  VocabularyRepository(this.db);
+  VocabularyRepository(this.db, {required this.ai});
 
+  /// Insert a word/phrase, fetch explanation from Gemini
   Future<int> insertVocabulary({
     required String text,
     required String source,
@@ -17,17 +20,20 @@ class VocabularyRepository {
     print("Repository: insertVocabulary starting for $text");
 
     return await db.transaction(() async {
+      // Insert word entry first
       final wordId = await db.into(db.wordEntries).insert(
             WordEntriesCompanion.insert(
               wordText: text,
               language: sourceLang,
               entryType: text.contains(' ') ? 'phrase' : 'word',
-              source: 'translator',
+              source: source,
               createdAt: DateTime.now(),
             ),
           );
-      print("Inserted Translation for wordId $wordId");
 
+      print("Inserted word entry with wordId $wordId");
+
+      // Insert dummy translation for now (replace with real translator later)
       await db.into(db.translations).insert(
             TranslationsCompanion.insert(
               wordId: wordId,
@@ -36,14 +42,28 @@ class VocabularyRepository {
             ),
           );
 
-      // Dummy meaning
+      // ✅ Fetch AI explanation
+      String explanation;
+      try {
+        explanation = await ai.fetchPhraseExplanation(
+          phrase: text,
+          language: sourceLang,
+        );
+        print("Fetched AI explanation: $explanation");
+      } catch (e) {
+        explanation = "Definition unavailable";
+        print("Failed to fetch AI explanation: $e");
+      }
+
+      // Insert explanation
       await db.into(db.wordMeanings).insert(
             WordMeaningsCompanion.insert(
               wordId: wordId,
-              definition: "Dummy explanation for '$text'",
+              definition: explanation,
             ),
           );
-      // Dummy Note
+
+      // Insert dummy note
       await db.into(db.wordNotes).insert(
             WordNotesCompanion.insert(
               wordId: wordId,
@@ -55,6 +75,7 @@ class VocabularyRepository {
     });
   }
 
+  // --- The rest of your repository remains unchanged ---
   Stream<List<VocabularyItem>> watchAllVocabulary() {
     final query = db.select(db.wordEntries)
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
@@ -78,9 +99,11 @@ class VocabularyRepository {
         final synonyms = await (db.select(db.wordSynonyms)
               ..where((s) => s.wordId.equals(word.id)))
             .get();
+
         final notes = await (db.select(db.wordNotes)
               ..where((n) => n.wordId.equals(word.id)))
             .get();
+
         final learning = await (db.select(db.wordLearningData)
               ..where((l) => l.wordId.equals(word.id)))
             .getSingleOrNull();
@@ -98,7 +121,6 @@ class VocabularyRepository {
         );
       }
       print("[Repository] watchAllVocabulary returning ${items.length} items");
-
       return items;
     });
   }
