@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'exercise.dart';
 import 'package:provider/provider.dart';
+
+import 'exercise.dart';
 import 'services/vocabulary_service.dart';
 import 'practice_service.dart';
 
@@ -19,6 +20,9 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   String? lastCorrectAnswer;
 
   late List<Exercise> exercises;
+
+  final GlobalKey<WriteAnswerWidgetState> _writeKey =
+      GlobalKey<WriteAnswerWidgetState>();
 
   @override
   void initState() {
@@ -39,16 +43,21 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   }
 
   void handleAnswer(String userAnswer) {
-    bool isCorrect = exercises[currentExerciseIndex].possibleAnswers.any(
-        (ans) => ans.toLowerCase().trim() == userAnswer.toLowerCase().trim());
+    final exercise = exercises[currentExerciseIndex];
+
+    final isCorrect = exercise.possibleAnswers.any(
+      (ans) => ans.toLowerCase().trim() == userAnswer.toLowerCase().trim(),
+    );
 
     setState(() {
       lastAnswerCorrect = isCorrect;
-      lastCorrectAnswer = exercises[currentExerciseIndex].answer;
+      lastCorrectAnswer = exercise.answer;
     });
   }
 
   void nextExercise() {
+    _writeKey.currentState?.clear();
+
     if (currentExerciseIndex < exercises.length - 1) {
       setState(() {
         currentExerciseIndex++;
@@ -73,86 +82,50 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   @override
   Widget build(BuildContext context) {
     final exercise = exercises[currentExerciseIndex];
-    double progress = (currentExerciseIndex + 1) / exercises.length;
+    final progress = (currentExerciseIndex + 1) / exercises.length;
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          title: Text(
-              'Practice (${currentExerciseIndex + 1}/${exercises.length})'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(6),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
-              child: LinearProgressIndicator(
-                value: progress, // <-- use it here
-                backgroundColor: Colors.grey[300],
-                color: Colors.greenAccent,
-                minHeight: 6,
-              ),
+      appBar: AppBar(
+        title:
+            Text('Practice (${currentExerciseIndex + 1}/${exercises.length})'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(6),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 6,
             ),
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ExerciseCard(exercise: exercise, onAnswer: handleAnswer),
-      ),
-      bottomNavigationBar: lastAnswerCorrect == null
-          ? null
-          : BottomAppBar(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: lastAnswerCorrect!
-                          ? Row(
-                              children: const [
-                                Icon(Icons.check, color: Colors.green),
-                                SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    'Correct!',
-                                    style: TextStyle(fontSize: 16),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                const Icon(Icons.close, color: Colors.red),
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    'Incorrect! (${lastCorrectAnswer})',
-                                    style: const TextStyle(fontSize: 16),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: nextExercise,
-                      child: const Text('Next'),
-                    ),
-                  ],
-                ),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: ExerciseCard(
+              exercise: exercise,
+              onAnswer: handleAnswer,
+              writeKey: _writeKey,
+            ),
+          ),
+          if (lastAnswerCorrect != null)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: FeedbackPanel(
+                isCorrect: lastAnswerCorrect!,
+                correctAnswer: lastCorrectAnswer,
+                onNext: nextExercise,
               ),
             ),
+        ],
+      ),
     );
   }
 }
@@ -160,19 +133,29 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
 class ExerciseCard extends StatelessWidget {
   final Exercise exercise;
   final Function(String) onAnswer;
+  final GlobalKey<WriteAnswerWidgetState> writeKey;
 
-  const ExerciseCard(
-      {super.key, required this.exercise, required this.onAnswer});
+  const ExerciseCard({
+    super.key,
+    required this.exercise,
+    required this.onAnswer,
+    required this.writeKey,
+  });
 
   @override
   Widget build(BuildContext context) {
     switch (exercise.type) {
       case ExerciseType.fourOptions:
-        return FourOptionsWidget(exercise: exercise, onAnswer: onAnswer);
+        return FourOptionsWidget(
+          exercise: exercise,
+          onAnswer: onAnswer,
+        );
       case ExerciseType.writeAnswer:
-        return WriteAnswerWidget(exercise: exercise, onAnswer: onAnswer);
-      default:
-        return const Center(child: Text('Unknown exercise type'));
+        return WriteAnswerWidget(
+          key: writeKey,
+          exercise: exercise,
+          onAnswer: onAnswer,
+        );
     }
   }
 }
@@ -210,15 +193,20 @@ class WriteAnswerWidget extends StatefulWidget {
   final Exercise exercise;
   final Function(String) onAnswer;
 
-  const WriteAnswerWidget(
-      {super.key, required this.exercise, required this.onAnswer});
+  const WriteAnswerWidget({
+    super.key,
+    required this.exercise,
+    required this.onAnswer,
+  });
 
   @override
-  State<WriteAnswerWidget> createState() => _WriteAnswerWidgetState();
+  WriteAnswerWidgetState createState() => WriteAnswerWidgetState();
 }
 
-class _WriteAnswerWidgetState extends State<WriteAnswerWidget> {
+class WriteAnswerWidgetState extends State<WriteAnswerWidget> {
   final TextEditingController _controller = TextEditingController();
+
+  void clear() => _controller.clear();
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +219,7 @@ class _WriteAnswerWidgetState extends State<WriteAnswerWidget> {
           controller: _controller,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            hintText: 'Type your answer here',
+            hintText: 'Type your answer',
           ),
         ),
         const SizedBox(height: 16),
@@ -240,6 +228,70 @@ class _WriteAnswerWidgetState extends State<WriteAnswerWidget> {
           child: const Text('Check Answer'),
         ),
       ],
+    );
+  }
+}
+
+class FeedbackPanel extends StatelessWidget {
+  final bool isCorrect;
+  final String? correctAnswer;
+  final VoidCallback onNext;
+
+  const FeedbackPanel({
+    super.key,
+    required this.isCorrect,
+    required this.correctAnswer,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+        decoration: BoxDecoration(
+          color: isCorrect
+              ? Colors.green.withOpacity(0.1)
+              : Colors.red.withOpacity(0.1),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(16),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  isCorrect ? Icons.check_circle : Icons.cancel,
+                  color: isCorrect ? Colors.green : Colors.red,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    isCorrect
+                        ? 'Correct!'
+                        : 'Incorrect\nCorrect answer:\n$correctAnswer',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: onNext,
+                child: const Text('Next'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
