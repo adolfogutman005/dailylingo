@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'exercise.dart';
-import 'services/vocabulary_service.dart';
+import '../services/vocabulary_service.dart';
 import 'practice_service.dart';
 
 class PracticeItemPage extends StatefulWidget {

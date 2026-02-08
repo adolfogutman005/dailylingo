@@ -12,7 +12,7 @@
 
 // write_new_example
 
-import '../services/vocabulary_service.dart';
+import '../../services/vocabulary_service.dart';
 import 'exercise.dart';
 
 class ExerciseTemplates {
@@ -27,6 +27,19 @@ class ExerciseTemplates {
     return Exercise.writeAnswer(
       question: 'Translate: $word',
       answer: translation,
+    );
+  }
+
+  static Future<Exercise> writeTargetTranslation(
+    VocabularyService vocab,
+    int wordId,
+  ) async {
+    final word = await vocab.getWordText(wordId);
+    final translation = await vocab.getPrimaryTranslation(wordId);
+
+    return Exercise.writeAnswer(
+      question: 'Translate: $translation',
+      answer: word,
     );
   }
 

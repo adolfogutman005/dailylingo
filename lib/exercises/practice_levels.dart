@@ -1,4 +1,4 @@
-import '../services/vocabulary_service.dart';
+import '../../services/vocabulary_service.dart';
 import 'exercises_templates.dart';
 import 'exercise.dart';
 
