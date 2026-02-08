@@ -30,7 +30,7 @@ class GeminiAI {
         ],
         'generationConfig': {
           'temperature': 0.3,
-          'maxOutputTokens': 400,
+          'maxOutputTokens': 5000,
         }
       }),
     );
@@ -40,20 +40,41 @@ class GeminiAI {
     }
 
     final data = jsonDecode(response.body);
-
-    // Extract plain text safely
     return data['candidates']?[0]?['content']?['parts']?[0]?['text'] ?? '';
   }
 
-  /// Fetch a short explanation for a phrase
-  Future<String> fetchPhraseExplanation({
+  /// Fetch full AI data (definition, examples, synonyms) in one request
+  Future<Map<String, dynamic>> fetchPhraseFullData({
     required String phrase,
     required String language,
   }) async {
-    final prompt = phraseDefinitionPrompt(phrase, language);
-    final explanation = await _callGemini(prompt);
+    final prompt = phraseFullDataPrompt(phrase, language);
+    final raw = await _callGemini(prompt);
 
-    // Trim whitespace and return
-    return explanation.trim();
+    try {
+      final parsed = jsonDecode(raw);
+
+      // Ensure proper types
+      final definition = parsed['definition']?.toString() ?? '';
+      final examples = (parsed['examples'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList();
+      final synonyms = (parsed['synonyms'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList();
+
+      return {
+        'definition': definition,
+        'examples': examples,
+        'synonyms': synonyms,
+      };
+    } catch (e) {
+      print('Error parsing AI JSON: $e\nRaw response:\n$raw');
+      return {
+        'definition': '',
+        'examples': [],
+        'synonyms': [],
+      };
+    }
   }
 }

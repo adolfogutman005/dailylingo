@@ -6,11 +6,10 @@ import '../../ai/gemini_ai.dart'; // <-- import your GeminiAI class
 
 class VocabularyRepository {
   final AppDatabase db;
-  final GeminiAI ai; // <-- inject GeminiAI
+  final GeminiAI ai;
 
   VocabularyRepository(this.db, {required this.ai});
 
-  /// Insert a word/phrase, fetch explanation from Gemini
   Future<int> insertVocabulary({
     required String text,
     required String source,
@@ -19,8 +18,14 @@ class VocabularyRepository {
   }) async {
     print("Repository: insertVocabulary starting for $text");
 
+    // Fetch AI data in a single call
+    final aiData = await ai.fetchPhraseFullData(
+      phrase: text,
+      language: sourceLang,
+    );
+    print('Fetched AI data: $aiData');
+
     return await db.transaction(() async {
-      // Insert word entry first
       final wordId = await db.into(db.wordEntries).insert(
             WordEntriesCompanion.insert(
               wordText: text,
@@ -30,10 +35,9 @@ class VocabularyRepository {
               createdAt: DateTime.now(),
             ),
           );
-
       print("Inserted word entry with wordId $wordId");
 
-      // Insert dummy translation for now (replace with real translator later)
+      // Dummy translation
       await db.into(db.translations).insert(
             TranslationsCompanion.insert(
               wordId: wordId,
@@ -42,34 +46,37 @@ class VocabularyRepository {
             ),
           );
 
-      // ✅ Fetch AI explanation
-      String explanation;
-      try {
-        explanation = await ai.fetchPhraseExplanation(
-          phrase: text,
-          language: sourceLang,
-        );
-        print("Fetched AI explanation: $explanation");
-      } catch (e) {
-        explanation = "Definition unavailable";
-        print("Failed to fetch AI explanation: $e");
-      }
-
-      // Insert explanation
+      // Insert AI explanation
       await db.into(db.wordMeanings).insert(
             WordMeaningsCompanion.insert(
               wordId: wordId,
-              definition: explanation,
+              definition: aiData['definition'] ?? '',
             ),
           );
 
-      // Insert dummy note
-      await db.into(db.wordNotes).insert(
-            WordNotesCompanion.insert(
-              wordId: wordId,
-              noteText: "This is a dummy note for '$text'",
-            ),
-          );
+      // Insert AI examples
+      for (final ex in aiData['examples'] ?? []) {
+        if (ex.isNotEmpty) {
+          await db.into(db.wordExamples).insert(
+                WordExamplesCompanion.insert(
+                  wordId: wordId,
+                  exampleText: ex,
+                ),
+              );
+        }
+      }
+
+      // Insert AI synonyms
+      for (final syn in aiData['synonyms'] ?? []) {
+        if (syn.isNotEmpty) {
+          await db.into(db.wordSynonyms).insert(
+                WordSynonymsCompanion.insert(
+                  wordId: wordId,
+                  synonymText: syn,
+                ),
+              );
+        }
+      }
 
       return wordId;
     });
