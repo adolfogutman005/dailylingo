@@ -72,17 +72,34 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   @override
   Widget build(BuildContext context) {
     final exercise = exercises[currentExerciseIndex];
+    double progress = (currentExerciseIndex + 1) / exercises.length;
 
     return Scaffold(
-      appBar: AppBar(
-        title:
-            Text('Practice (${currentExerciseIndex + 1}/${exercises.length})'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: AppBar(
+          title: Text(
+              'Practice (${currentExerciseIndex + 1}/${exercises.length})'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(6),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+              child: LinearProgressIndicator(
+                value: progress, // <-- use it here
+                backgroundColor: Colors.grey[300],
+                color: Colors.greenAccent,
+                minHeight: 6,
+              ),
+            ),
           ),
-        ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
