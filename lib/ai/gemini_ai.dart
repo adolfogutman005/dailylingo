@@ -8,7 +8,7 @@ class GeminiAI {
 
   static const String endpoint =
       'https://generativelanguage.googleapis.com/v1beta/models/'
-      'gemini-3-flash-preview:generateContent';
+      'gemma-3-27b-it:generateContent';
 
   GeminiAI({required this.apiKey});
 
@@ -52,7 +52,8 @@ class GeminiAI {
     final raw = await _callGemini(prompt);
 
     try {
-      final parsed = jsonDecode(raw);
+      final jsonString = extractFirstJsonObject(raw);
+      final parsed = jsonDecode(jsonString);
 
       // Ensure proper types
       final definition = parsed['definition']?.toString() ?? '';
@@ -77,4 +78,30 @@ class GeminiAI {
       };
     }
   }
+}
+
+/// Extracts the first JSON object from a string
+String extractFirstJsonObject(String input) {
+  int braceCount = 0;
+  int startIndex = -1;
+  int endIndex = -1;
+
+  for (int i = 0; i < input.length; i++) {
+    if (input[i] == '{') {
+      if (braceCount == 0) startIndex = i;
+      braceCount++;
+    } else if (input[i] == '}') {
+      braceCount--;
+      if (braceCount == 0) {
+        endIndex = i;
+        break;
+      }
+    }
+  }
+
+  if (startIndex != -1 && endIndex != -1) {
+    return input.substring(startIndex, endIndex + 1);
+  }
+
+  throw FormatException('No JSON object found in input');
 }

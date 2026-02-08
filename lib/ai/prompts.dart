@@ -46,4 +46,5 @@ Instructions:
 2. Fill exactly 5 examples and 5 synonyms. If some are unknown, use empty strings.
 3. Definition should be 1–2 concise sentences.
 4. Respond **ONLY with valid JSON**, no extra text, logs, quotes, fences, or markdown.
+5. Do not return any JSON formatting like  ```json. Just the plain JSON object 
 """;
