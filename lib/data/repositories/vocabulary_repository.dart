@@ -271,6 +271,23 @@ class VocabularyRepository {
     return journalId;
   }
 
+  Future<void> saveCorrections(
+      int journalId, List<CorrectionClass> corrections) async {
+    for (final c in corrections) {
+      final companion = CorrectionsCompanion(
+        journalId: Value(journalId),
+        start: Value(c.start),
+        end: Value(c.end),
+        wrong: Value(c.wrong),
+        right: Value(c.right),
+        explanation: Value(c.explanation),
+        example: Value(c.example),
+        type: Value(c.type.name), // store enum as string
+      );
+      await db.into(db.corrections).insert(companion);
+    }
+  }
+
   Future<void> debugPrintAllWords() async {
     print("===== DEBUG: All Word Entries =====");
     final words = await db.select(db.wordEntries).get();
