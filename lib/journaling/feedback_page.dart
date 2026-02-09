@@ -24,6 +24,9 @@ class _FeedbackPageState extends State<FeedbackPage>
   late List<Correction> editableCorrections;
   late List<String> learnedConcepts;
 
+  late List<TextEditingController> conceptControllers;
+  late List<FocusNode> conceptFocusNodes;
+
   /// Active filters
   Set<CorrectionType> activeFilters = {
     CorrectionType.grammar,
@@ -38,12 +41,23 @@ class _FeedbackPageState extends State<FeedbackPage>
 
     editableCorrections = List.from(widget.feedback.corrections);
     learnedConcepts = List.from(widget.feedback.conceptsLearned);
+
+    conceptFocusNodes = learnedConcepts.map((_) => FocusNode()).toList();
+
+    conceptControllers =
+        learnedConcepts.map((c) => TextEditingController(text: c)).toList();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     _titleController.dispose();
+    for (var c in conceptControllers) {
+      c.dispose();
+    }
+    for (var n in conceptFocusNodes) {
+      n.dispose();
+    }
     super.dispose();
   }
 
@@ -157,13 +171,15 @@ class _FeedbackPageState extends State<FeedbackPage>
           ),
         ),
         subtitle: Text(
-          "${learnedConcepts.length} concept${learnedConcepts.length == 1 ? '' : 's'}",
+          "${conceptControllers.length} concept${conceptControllers.length == 1 ? '' : 's'}",
           style: const TextStyle(fontSize: 13),
         ),
         children: [
-          ...learnedConcepts.asMap().entries.map((entry) {
+          ...conceptControllers.asMap().entries.map((entry) {
             final index = entry.key;
-            final concept = entry.value;
+            final controller = entry.value;
+            final focusNode =
+                conceptFocusNodes[index]; // Create a focus node for each field
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
@@ -171,7 +187,8 @@ class _FeedbackPageState extends State<FeedbackPage>
                 children: [
                   Expanded(
                     child: TextFormField(
-                      initialValue: concept,
+                      controller: controller,
+                      focusNode: focusNode,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                       ),
@@ -183,6 +200,10 @@ class _FeedbackPageState extends State<FeedbackPage>
                     onPressed: () {
                       setState(() {
                         learnedConcepts.removeAt(index);
+                        conceptControllers[index].dispose();
+                        conceptControllers.removeAt(index);
+                        conceptFocusNodes[index].dispose();
+                        conceptFocusNodes.removeAt(index);
                       });
                     },
                   ),
@@ -193,7 +214,15 @@ class _FeedbackPageState extends State<FeedbackPage>
           TextButton.icon(
             onPressed: () {
               setState(() {
-                learnedConcepts.add(""); // add empty concept
+                learnedConcepts.add("");
+                final controller = TextEditingController();
+                final focusNode = FocusNode();
+                conceptControllers.add(controller);
+                conceptFocusNodes.add(focusNode);
+                // Delay so the widget exists, then focus
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  FocusScope.of(context).requestFocus(focusNode);
+                });
               });
             },
             icon: const Icon(Icons.add),

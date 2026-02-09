@@ -87,6 +87,8 @@ class _WriteJournalPageState extends State<WriteJournalPage> {
             const SizedBox(width: 8),
             OutlinedButton(
               onPressed: () async {
+                print('Feedback button clicked');
+
                 final feedback = await vocabularyService.getFeedback(
                     journalText: _contentController.text.trim());
 
