@@ -253,20 +253,18 @@ class VocabularyRepository {
 
   Future<int> saveJournal({
     required String title,
-    required String contentOriginal,
-    String? contentCorrected, // nullable
+    required String originalContent,
+    String? correctedContent,
   }) async {
-    // Create a companion object for insertion
     final journalCompanion = JournalsCompanion(
       title: Value(title),
-      contentOriginal: Value(contentOriginal),
-      contentCorrected: contentCorrected != null
-          ? Value(contentCorrected)
-          : const Value.absent(), // absent if null
+      contentOriginal: Value(originalContent),
+      contentCorrected: correctedContent != null
+          ? Value(correctedContent)
+          : const Value.absent(),
       createdAt: Value(DateTime.now()),
     );
 
-    // Insert into the database and return the generated id
     final journalId = await db.into(db.journals).insert(journalCompanion);
     return journalId;
   }
@@ -282,9 +280,28 @@ class VocabularyRepository {
         right: Value(c.right),
         explanation: Value(c.explanation),
         example: Value(c.example),
-        type: Value(c.type.name), // store enum as string
+        type: Value(c.type.name),
       );
       await db.into(db.corrections).insert(companion);
+    }
+  }
+
+  Future<void> saveConcepts(int journalId, List<String> concepts) async {
+    for (final conceptName in concepts) {
+      final existingConcept = await (db.select(db.grammarConcepts)
+            ..where((tbl) => tbl.name.equals(conceptName)))
+          .getSingleOrNull();
+
+      final conceptId = existingConcept?.id ??
+          await db
+              .into(db.grammarConcepts)
+              .insert(GrammarConceptsCompanion(name: Value(conceptName)));
+
+      final jc = JournalConceptsCompanion(
+        journalId: Value(journalId),
+        grammarConceptId: Value(conceptId),
+      );
+      await db.into(db.journalConcepts).insert(jc);
     }
   }
 

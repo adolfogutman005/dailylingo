@@ -5,6 +5,7 @@ import '../data/repositories/vocabulary_repository.dart';
 import '../vocabulary/models/vocabulary_item.dart';
 import '../translator_service.dart';
 import '../journaling/models/journal_feedback_model.dart';
+import '../journaling/models/feedback_data.dart';
 
 class VocabularyService {
   late final VocabularyRepository _repo;
@@ -104,20 +105,20 @@ class VocabularyService {
     );
   }
 
-  Future<int> createJournal({
-    required String title,
-    required String contentOriginal,
-    String? contentCorrected,
-  }) async {
-    // You could add validation or preprocessing here
-    if (title.isEmpty) throw Exception('Title cannot be empty');
-    if (contentOriginal.isEmpty) throw Exception('Content cannot be empty');
-
+  Future<int> saveJournal(FeedbackData feedback,
+      {bool saveFeedback = true}) async {
+    // 1️⃣ Save the journal itself via repository
     final journalId = await _repo.saveJournal(
-      title: title,
-      contentOriginal: contentOriginal,
-      contentCorrected: contentCorrected,
+      title: feedback.title,
+      originalContent: feedback.originalContent,
+      correctedContent: feedback.correctedContent,
     );
+
+    // 2️⃣ Save feedback if requested
+    if (saveFeedback) {
+      await _repo.saveCorrections(journalId, feedback.corrections);
+      await _repo.saveConcepts(journalId, feedback.conceptsLearned);
+    }
 
     return journalId;
   }
