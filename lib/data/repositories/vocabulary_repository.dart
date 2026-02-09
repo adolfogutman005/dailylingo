@@ -5,6 +5,8 @@ import 'package:drift/drift.dart';
 import '../../ai/gemini_ai.dart'; // <-- import your GeminiAI class
 import '../../translator_service.dart';
 import '../../language_codes.dart';
+import '../../journaling/models/journal_feedback_model.dart';
+import '../../journaling/models/corrections.dart';
 
 class VocabularyRepository {
   final AppDatabase db;
@@ -214,6 +216,39 @@ class VocabularyRepository {
       word: word,
       language: language,
     );
+  }
+
+  Future<JournalFeedback> getFeedback({
+    required String journalText,
+  }) async {
+    final data = await ai.analyzeJournal(
+      text: journalText,
+    );
+
+    final corrections = (data['corrections'] as List<dynamic>)
+        .map((c) => Correction(
+              start: c['start'],
+              end: c['end'],
+              wrong: c['wrong'],
+              right: c['right'],
+              explanation: c['explanation'],
+              example: c['example'],
+              type: CorrectionType.values.firstWhere(
+                (t) => t.name == c['type'],
+              ),
+              concept: c['concept'],
+            ))
+        .toList();
+
+    final concepts = (data['conceptsLearned'] as List<dynamic>? ?? [])
+        .map((c) => c.toString())
+        .toList();
+
+    return JournalFeedback(
+        originalContent: journalText,
+        correctedContent: data['correctedContent'],
+        corrections: corrections,
+        conceptsLearned: concepts);
   }
 
   Future<void> debugPrintAllWords() async {

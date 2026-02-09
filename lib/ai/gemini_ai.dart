@@ -136,6 +136,16 @@ class GeminiAI {
       };
     }
   }
+
+  Future<Map<String, dynamic>> analyzeJournal({
+    required String text,
+  }) async {
+    final prompt = journalFeedbackPrompt(text);
+    final raw = await _callGemini(prompt);
+
+    final jsonString = extractFirstJsonObject(raw);
+    return jsonDecode(jsonString);
+  }
 }
 
 /// Extracts the first JSON object from a string

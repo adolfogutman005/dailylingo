@@ -4,6 +4,7 @@ import '../data/database/app_database.dart';
 import '../data/repositories/vocabulary_repository.dart';
 import '../vocabulary/models/vocabulary_item.dart';
 import '../translator_service.dart';
+import '../journaling/models/journal_feedback_model.dart';
 
 class VocabularyService {
   late final VocabularyRepository _repo;
@@ -92,6 +93,14 @@ class VocabularyService {
     return _repo.generateFillInTheBlank(
       word: word,
       language: language,
+    );
+  }
+
+  Future<JournalFeedback> getFeedback({
+    required String journalText,
+  }) {
+    return _repo.getFeedback(
+      journalText: journalText,
     );
   }
 

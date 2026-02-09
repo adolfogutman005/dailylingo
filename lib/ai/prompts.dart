@@ -105,3 +105,42 @@ JSON format:
 Target word/phrase: "$word"
 ''';
 }
+
+String journalFeedbackPrompt(String text) {
+  return '''
+You are a language teacher.
+
+
+Return ONLY valid JSON.
+DO NOT include explanations outside JSON.
+DO NOT include markdown.
+
+Rules:
+- Use character indices (0-based) for start/end based on the EXACT text below
+- end is exclusive
+- type must be one of: grammar, style, suggestion
+- correctedContent must be fully corrected and natural
+- conceptsLearned must list the grammatical concepts practiced or corrected
+
+JSON format:
+{
+  "correctedContent": "",
+  "corrections": [
+    {
+      "start": 0,
+      "end": 0,
+      "wrong": "",
+      "right": "",
+      "explanation": "",
+      "example": "",
+      "type": "",
+      "concept": ""
+    }
+  ],
+  "conceptsLearned": []
+}
+
+TEXT (do not rewrite it):
+$text
+''';
+}
