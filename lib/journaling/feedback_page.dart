@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'models/corrections.dart';
 import 'models/feedback_data.dart';
-
+import 'journaling_page.dart';
 import 'package:provider/provider.dart';
 import '../services/vocabulary_service.dart';
 
@@ -95,7 +95,8 @@ class _FeedbackPageState extends State<FeedbackPage>
         SnackBar(content: Text('Saved successfully! (ID: $journalId)')),
       );
 
-      Navigator.pop(context); // go back after save
+      Navigator.popUntil(context, (route) => route.isFirst);
+      ;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving: $e')),

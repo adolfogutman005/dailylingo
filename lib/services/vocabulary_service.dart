@@ -160,4 +160,8 @@ class VocabularyService {
     print("[VocabularyService] debugPrintAllWords called");
     await _repo.debugPrintAllWords();
   }
+
+  Future<void> deleteJournal(int journalId) async {
+    await _repo.deleteJournal(journalId);
+  }
 }

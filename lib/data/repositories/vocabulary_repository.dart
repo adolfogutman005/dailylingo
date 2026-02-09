@@ -353,6 +353,10 @@ class VocabularyRepository {
     return ai.generateGrammarMultipleChoice(concept: concept);
   }
 
+  Future<void> deleteJournal(int journalId) async {
+    await (db.delete(db.journals)..where((j) => j.id.equals(journalId))).go();
+  }
+
   Future<void> debugPrintAllWords() async {
     print("===== DEBUG: All Word Entries =====");
     final words = await db.select(db.wordEntries).get();

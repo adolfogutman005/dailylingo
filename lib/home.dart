@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // Import your pages
 import 'home_page.dart';
-import 'journaling/journaling.dart';
+import 'journaling/journaling_page.dart';
 // import 'notetaking/note_taking_page.dart';
 import 'vocabulary/pages/vocabulary_page.dart';
 import 'reader/pages/reader_page.dart';

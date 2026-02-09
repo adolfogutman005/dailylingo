@@ -120,6 +120,9 @@ Rules:
 - type must be one of: grammar, style, suggestion
 - correctedContent must be fully corrected and natural
 - conceptsLearned must list the grammatical concepts practiced or corrected
+- The substring text[start:end] MUST exactly equal "wrong"
+- If it does not match exactly, recompute the indices.
+- Never guess indices.
 
 JSON format:
 {
