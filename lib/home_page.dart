@@ -192,17 +192,19 @@ class _HomePageState extends State<HomePage> {
                   IconButton(
                     icon: const Icon(Icons.bookmark),
                     onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      messenger.showSnackBar(
+                        const SnackBar(content: Text("Saving…")),
+                      );
                       await vocabularyService.saveVocabulary(
                         text: sourceText,
                         source: 'translator',
                         sourceLang: currentSourceLang,
                         targetLang: currentTargetLang,
                       );
-
-                      // Only show snackbar if widget is still mounted
                       if (!mounted) return;
-
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.hideCurrentSnackBar();
+                      messenger.showSnackBar(
                         const SnackBar(content: Text("Saved to vocabulary")),
                       );
                     },
