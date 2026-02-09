@@ -378,7 +378,7 @@ class _FeedbackPageState extends State<FeedbackPage>
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text("Save"),
+            child: const Text("Save without Feedback"),
           ),
           const SizedBox(width: 6),
           OutlinedButton(
@@ -386,7 +386,7 @@ class _FeedbackPageState extends State<FeedbackPage>
               // Add Database Saving Logic
               Navigator.pop(context);
             },
-            child: const Text("Save without Feedback"),
+            child: const Text("Save"),
           ),
           const SizedBox(width: 12),
         ],
