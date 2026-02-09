@@ -89,6 +89,7 @@ class _GrammarTabState extends State<_GrammarTab> {
                 onPressed: isLoading
                     ? null
                     : () async {
+                        final navigator = Navigator.of(context);
                         setState(() {
                           _loadingConcept = concept;
                         });
@@ -102,8 +103,7 @@ class _GrammarTabState extends State<_GrammarTab> {
 
                           if (!mounted || exercises.isEmpty) return;
 
-                          Navigator.push(
-                            context,
+                          navigator.push(
                             MaterialPageRoute(
                               builder: (_) =>
                                   PracticeItemPage(exercisesOverride: exercises),
