@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'exercise.dart';
+import 'models/base_exercise.dart';
 import 'exercises_page.dart';
 
 class PracticeSessionPage extends StatelessWidget {
-  final List<Exercise> exercises;
+  final List<BaseExercise> exercises;
 
   const PracticeSessionPage({super.key, required this.exercises});
 

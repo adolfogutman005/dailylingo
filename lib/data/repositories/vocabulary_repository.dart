@@ -7,6 +7,7 @@ import '../../translator_service.dart';
 import '../../language_codes.dart';
 import '../../journaling/models/journal_feedback_model.dart';
 import '../../journaling/models/corrections.dart';
+import '../../exercises/models/grammar_feedback.dart';
 
 class VocabularyRepository {
   final AppDatabase db;
@@ -308,6 +309,18 @@ class VocabularyRepository {
       );
       await db.into(db.journalConcepts).insert(jc);
     }
+  }
+
+  Future<GrammarFeedback> checkGrammar({
+    required String concept,
+    required String sentence,
+  }) async {
+    final result = await ai.checkGrammar(
+      concept: concept,
+      sentence: sentence,
+    );
+
+    return result;
   }
 
   Future<void> debugPrintAllWords() async {

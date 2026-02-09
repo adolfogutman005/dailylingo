@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'exercise.dart';
+import 'models/base_exercise.dart';
+import 'models/exercise.dart';
+import 'models/grammar_evaluator_exercise.dart';
 import '../services/vocabulary_service.dart';
 import 'practice_service.dart';
 
 class PracticeItemPage extends StatefulWidget {
   final int? wordId;
-  final List<Exercise>? exercisesOverride;
+  final List<BaseExercise>? exercisesOverride;
 
   const PracticeItemPage({super.key, this.wordId, this.exercisesOverride});
 
@@ -17,10 +18,12 @@ class PracticeItemPage extends StatefulWidget {
 
 class _PracticeItemPageState extends State<PracticeItemPage> {
   int currentExerciseIndex = 0;
-  bool? lastAnswerCorrect; // null = unanswered, true/false = result
+  bool? lastAnswerCorrect;
   String? lastCorrectAnswer;
 
-  List<Exercise> exercises = [];
+  int correctCount = 0;
+
+  List<BaseExercise> exercises = [];
 
   final GlobalKey<WriteAnswerWidgetState> _writeKey =
       GlobalKey<WriteAnswerWidgetState>();
@@ -47,17 +50,36 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
     });
   }
 
-  void handleAnswer(String userAnswer) {
+  Future<void> handleAnswer(String userAnswer) async {
     final exercise = exercises[currentExerciseIndex];
 
-    final isCorrect = exercise.possibleAnswers.any(
-      (ans) => ans.toLowerCase().trim() == userAnswer.toLowerCase().trim(),
-    );
+    if (exercise is Exercise) {
+      final isCorrect = exercise.possibleAnswers.any(
+        (ans) => ans.toLowerCase().trim() == userAnswer.toLowerCase().trim(),
+      );
 
-    setState(() {
-      lastAnswerCorrect = isCorrect;
-      lastCorrectAnswer = exercise.answer;
-    });
+      if (isCorrect) correctCount++;
+
+      setState(() {
+        lastAnswerCorrect = isCorrect;
+        lastCorrectAnswer = exercise.answer;
+      });
+      return;
+    }
+
+    if (exercise is GrammarEvaluatorExercise) {
+      final feedback = await exercise.evaluator(userAnswer);
+
+      if (feedback.isCorrect) correctCount++;
+
+      setState(() {
+        lastAnswerCorrect = feedback.isCorrect;
+        lastCorrectAnswer = feedback.correctedSentence;
+      });
+      return;
+    }
+
+    throw UnsupportedError('Unknown exercise type');
   }
 
   void nextExercise() {
@@ -75,9 +97,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
         MaterialPageRoute(
           builder: (_) => SessionSummaryPage(
             total: exercises.length,
-            correct: exercises
-                .where((ex) => ex.answer == lastCorrectAnswer)
-                .length, // For dummy purposes
+            correct: correctCount,
           ),
         ),
       );
@@ -88,9 +108,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   Widget build(BuildContext context) {
     if (exercises.isEmpty) {
       return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -143,8 +161,10 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   }
 }
 
+/* ================== EXERCISE CARD ================== */
+
 class ExerciseCard extends StatelessWidget {
-  final Exercise exercise;
+  final BaseExercise exercise;
   final Function(String) onAnswer;
   final GlobalKey<WriteAnswerWidgetState> writeKey;
 
@@ -157,29 +177,46 @@ class ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    switch (exercise.type) {
-      case ExerciseType.fourOptions:
-        return FourOptionsWidget(
-          exercise: exercise,
-          onAnswer: onAnswer,
-        );
-      case ExerciseType.writeAnswer:
-        return WriteAnswerWidget(
-          key: writeKey,
-          exercise: exercise,
-          onAnswer: onAnswer,
-        );
+    if (exercise is Exercise) {
+      final ex = exercise as Exercise;
+
+      switch (ex.type) {
+        case ExerciseType.fourOptions:
+          return FourOptionsWidget(
+            exercise: ex,
+            onAnswer: onAnswer,
+          );
+        case ExerciseType.writeAnswer:
+          return WriteAnswerWidget(
+            key: writeKey,
+            exercise: ex,
+            onAnswer: onAnswer,
+          );
+      }
     }
+
+    if (exercise is GrammarEvaluatorExercise) {
+      return WriteGrammarAnswerWidget(
+        exercise: exercise as GrammarEvaluatorExercise,
+        onAnswer: onAnswer,
+      );
+    }
+
+    throw UnsupportedError('Unknown exercise widget');
   }
 }
 
-// ================== EXERCISE WIDGETS ==================
+/* ================== EXERCISE WIDGETS ================== */
+
 class FourOptionsWidget extends StatelessWidget {
   final Exercise exercise;
   final Function(String) onAnswer;
 
-  const FourOptionsWidget(
-      {super.key, required this.exercise, required this.onAnswer});
+  const FourOptionsWidget({
+    super.key,
+    required this.exercise,
+    required this.onAnswer,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +282,51 @@ class WriteAnswerWidgetState extends State<WriteAnswerWidget> {
   }
 }
 
+class WriteGrammarAnswerWidget extends StatefulWidget {
+  final GrammarEvaluatorExercise exercise;
+  final Function(String) onAnswer;
+
+  const WriteGrammarAnswerWidget({
+    super.key,
+    required this.exercise,
+    required this.onAnswer,
+  });
+
+  @override
+  State<WriteGrammarAnswerWidget> createState() =>
+      _WriteGrammarAnswerWidgetState();
+}
+
+class _WriteGrammarAnswerWidgetState extends State<WriteGrammarAnswerWidget> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(widget.exercise.question, style: const TextStyle(fontSize: 20)),
+        const SizedBox(height: 24),
+        TextField(
+          controller: _controller,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'Write your sentence',
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () => widget.onAnswer(_controller.text),
+          child: const Text('Check'),
+        ),
+      ],
+    );
+  }
+}
+
+/* ================== FEEDBACK ================== */
+
 class FeedbackPanel extends StatelessWidget {
   final bool isCorrect;
   final String? correctAnswer;
@@ -286,10 +368,7 @@ class FeedbackPanel extends StatelessWidget {
                     isCorrect
                         ? 'Correct!'
                         : 'Incorrect\nCorrect answer:\n$correctAnswer',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      height: 1.4,
-                    ),
+                    style: const TextStyle(fontSize: 16, height: 1.4),
                   ),
                 ),
               ],
@@ -309,13 +388,17 @@ class FeedbackPanel extends StatelessWidget {
   }
 }
 
-// ================== SESSION SUMMARY ==================
+/* ================== SESSION SUMMARY ================== */
+
 class SessionSummaryPage extends StatelessWidget {
   final int total;
   final int correct;
 
-  const SessionSummaryPage(
-      {super.key, required this.total, required this.correct});
+  const SessionSummaryPage({
+    super.key,
+    required this.total,
+    required this.correct,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -325,8 +408,10 @@ class SessionSummaryPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('You answered $correct out of $total correctly!',
-                style: const TextStyle(fontSize: 22)),
+            Text(
+              'You answered $correct out of $total correctly!',
+              style: const TextStyle(fontSize: 22),
+            ),
             const SizedBox(height: 24),
             ElevatedButton(
               child: const Text('Back to Home'),

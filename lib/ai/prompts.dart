@@ -165,3 +165,36 @@ TEXT (do not rewrite it):
 $text
 ''';
 }
+
+String grammarFeedbackPrompt({
+  required String concept,
+  required String sentence,
+}) {
+  return '''
+You are a language teacher.
+
+Grammar concept: "$concept"
+Student sentence:
+"$sentence"
+
+Analyze the sentence.
+
+Rules:
+- If the sentence is correct, isCorrect = true
+- If incorrect, correct it naturally
+- Provide short, clear explanations
+- Focus ONLY on the given grammar concept
+- Do NOT rewrite stylistically unless needed for correctness
+
+Return ONLY valid JSON in this format:
+
+{
+  "isCorrect": true | false,
+  "correctedSentence": "corrected version",
+  "explanations": [
+    "explanation 1",
+    "explanation 2"
+  ]
+}
+''';
+}

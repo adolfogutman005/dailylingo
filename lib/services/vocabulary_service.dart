@@ -6,6 +6,7 @@ import '../vocabulary/models/vocabulary_item.dart';
 import '../translator_service.dart';
 import '../journaling/models/journal_feedback_model.dart';
 import '../journaling/models/feedback_data.dart';
+import '../exercises/models/grammar_feedback.dart';
 
 class VocabularyService {
   late final VocabularyRepository _repo;
@@ -123,6 +124,24 @@ class VocabularyService {
     }
 
     return journalId;
+  }
+
+  Future<GrammarFeedback> checkGrammar({
+    required String concept,
+    required String sentence,
+  }) async {
+    if (sentence.trim().isEmpty) {
+      return GrammarFeedback(
+        isCorrect: false,
+        correctedSentence: '',
+        explanations: ['You did not write a sentence.'],
+      );
+    }
+
+    return _repo.checkGrammar(
+      concept: concept,
+      sentence: sentence,
+    );
   }
 
   Future<void> debugPrintAllWords() async {

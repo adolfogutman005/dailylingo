@@ -1,5 +1,7 @@
 import '../../services/vocabulary_service.dart';
-import 'exercise.dart';
+import 'models/base_exercise.dart';
+import 'models/exercise.dart';
+import 'models/grammar_evaluator_exercise.dart';
 import 'practice_levels.dart';
 import 'vocabulary_exercises_templates.dart';
 import 'grammar_exercises_templates.dart';
@@ -9,21 +11,23 @@ class PracticeService {
 
   PracticeService(this.vocab);
 
-  Future<List<Exercise>> getGrammarExercises(String concept) async {
+  Future<List<BaseExercise>> getGrammarExercises(String concept) async {
     return [
-      await GrammarExerciseTemplates.exampleSentence(vocab, concept),
       await GrammarExerciseTemplates.multipleChoice(vocab, concept),
+      GrammarExerciseTemplates.writeAndGetFeedback(vocab, concept)
     ];
   }
 
-  Future<List<Exercise>> getItemExercises(int wordId) async {
+  Future<List<BaseExercise>> getItemExercises(int wordId) async {
     final learning = await vocab.getLearningData(wordId);
     final times = learning?.timesPracticed ?? 0;
 
     final level = _resolveLevel(times);
     final handler = levelHandlers[level] ?? getLevelOneExercises;
 
-    return handler(vocab, wordId);
+    final exercises = await handler(vocab, wordId);
+
+    return exercises; // List<Exercise> is OK here
   }
 
   int _resolveLevel(int times) {

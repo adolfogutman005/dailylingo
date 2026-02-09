@@ -1,24 +1,9 @@
-import 'models/exercise.dart';
-import '../../services/vocabulary_service.dart';
-import 'models/grammar_evaluator_exercise.dart';
+import '../models/exercise.dart';
+import '../../../services/vocabulary_service.dart';
+import '../models/grammar_evaluator_exercise.dart';
 
 class GrammarExerciseTemplates {
   // ---------------- WRITE EXAMPLE SENTENCE ----------------
-  static GrammarEvaluatorExercise writeAndGetFeedback(
-    VocabularyService vocab,
-    String concept,
-  ) {
-    return GrammarEvaluatorExercise(
-      question: 'Write a sentence using "$concept"',
-      evaluator: (userAnswer) async {
-        return vocab.checkGrammar(
-          concept: concept,
-          sentence: userAnswer,
-        );
-      },
-    );
-  }
-
   // ---------------- MULTIPLE CHOICE ----------------
   static Future<Exercise> multipleChoice(
     VocabularyService vocab,
@@ -35,6 +20,21 @@ class GrammarExerciseTemplates {
       question: 'Which sentence uses "$concept" correctly?',
       options: options..shuffle(), // shuffle for randomness
       answer: 'Correct example',
+    );
+  }
+
+  static GrammarEvaluatorExercise writeAndGetFeedback(
+    VocabularyService vocab,
+    String concept,
+  ) {
+    return GrammarEvaluatorExercise(
+      question: 'Write a sentence using "$concept"',
+      evaluator: (userAnswer) async {
+        return vocab.checkGrammar(
+          concept: concept,
+          sentence: userAnswer,
+        );
+      },
     );
   }
 }

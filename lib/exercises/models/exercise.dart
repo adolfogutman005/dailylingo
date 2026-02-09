@@ -1,11 +1,18 @@
-enum ExerciseType { fourOptions, writeAnswer }
+import 'base_exercise.dart';
 
-class Exercise {
-  final ExerciseType type;
+enum ExerciseType {
+  fourOptions,
+  writeAnswer,
+}
+
+class Exercise extends BaseExercise {
+  @override
   final String question;
+
+  final ExerciseType type;
   final List<String>? options;
   final String answer;
-  final List<String> possibleAnswers; // <-- add this
+  final List<String> possibleAnswers;
 
   Exercise({
     required this.type,
@@ -13,7 +20,7 @@ class Exercise {
     required this.answer,
     this.options,
     List<String>? possibleAnswers,
-  }) : possibleAnswers = possibleAnswers ?? [answer]; // default = answer only
+  }) : possibleAnswers = possibleAnswers ?? [answer];
 
   factory Exercise.fourOptions({
     required String question,

@@ -12,8 +12,8 @@
 
 // write_new_example
 
-import '../../services/vocabulary_service.dart';
-import 'models/exercise.dart';
+import '../../../services/vocabulary_service.dart';
+import '../models/exercise.dart';
 
 class ExerciseTemplates {
   // ---------------- WRITE TRANSLATION ----------------

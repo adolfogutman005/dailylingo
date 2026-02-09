@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'prompts.dart';
+import '../exercises/models/grammar_feedback.dart';
 
 /// Gemini AI helper for fetching text responses
 class GeminiAI {
@@ -145,6 +146,37 @@ class GeminiAI {
 
     final jsonString = extractFirstJsonObject(raw);
     return jsonDecode(jsonString);
+  }
+
+  Future<GrammarFeedback> checkGrammar({
+    required String concept,
+    required String sentence,
+  }) async {
+    final prompt = grammarFeedbackPrompt(
+      concept: concept,
+      sentence: sentence,
+    );
+
+    final raw = await _callGemini(prompt);
+
+    try {
+      final jsonString = extractFirstJsonObject(raw);
+      final parsed = jsonDecode(jsonString);
+
+      return GrammarFeedback(
+        isCorrect: parsed['isCorrect'] as bool,
+        correctedSentence: parsed['correctedSentence'] as String,
+        explanations: (parsed['explanations'] as List<dynamic>)
+            .map((e) => e.toString())
+            .toList(),
+      );
+    } catch (e) {
+      return GrammarFeedback(
+        isCorrect: false,
+        correctedSentence: sentence,
+        explanations: ['Unable to analyze the sentence. Please try again.'],
+      );
+    }
   }
 }
 
