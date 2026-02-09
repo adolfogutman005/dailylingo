@@ -80,9 +80,9 @@ class _GrammarTabState extends State<_GrammarTab> {
             final concept = concepts[index];
             final isLoading = _loadingConcept == concept;
             return ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.check_circle_outline,
-                color: Colors.green,
+                color: Theme.of(context).colorScheme.primary,
               ),
               title: Text(concept),
               trailing: ElevatedButton(

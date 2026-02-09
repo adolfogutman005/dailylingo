@@ -30,7 +30,14 @@ class VocabularyDetailPage extends StatelessWidget {
           /// Source + actions row
           Row(
             children: [
-              Chip(label: Text(item.source)),
+              Chip(
+                label: Text(item.source),
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontSize: 12,
+                ),
+              ),
               const Spacer(),
               IconButton(
                 icon: const Icon(Icons.volume_up),
@@ -110,9 +117,8 @@ class VocabularyDetailPage extends StatelessWidget {
               "Times practiced: ${item.timesPracticed}\n"
               "Last reviewed: ${item.lastReviewed ?? '—'}\n"
               "Status: ${item.status}",
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),

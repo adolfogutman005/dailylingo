@@ -146,12 +146,14 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(6),
+          preferredSize: const Size.fromHeight(4),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: LinearProgressIndicator(
               value: progress,
-              minHeight: 6,
+              minHeight: 4,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
             ),
           ),
         ),
@@ -241,15 +243,22 @@ class FourOptionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(exercise.question, style: const TextStyle(fontSize: 20)),
+        Text(
+          exercise.question,
+          style: theme.textTheme.titleMedium?.copyWith(height: 1.4),
+        ),
         const SizedBox(height: 24),
         ...exercise.options!.map(
           (opt) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
               onPressed: () => onAnswer(opt),
               child: Text(opt),
             ),
@@ -281,15 +290,18 @@ class WriteAnswerWidgetState extends State<WriteAnswerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.exercise.question, style: const TextStyle(fontSize: 20)),
+        Text(
+          widget.exercise.question,
+          style: theme.textTheme.titleMedium?.copyWith(height: 1.4),
+        ),
         const SizedBox(height: 24),
         TextField(
           controller: _controller,
           decoration: const InputDecoration(
-            border: OutlineInputBorder(),
             hintText: 'Type your answer',
           ),
         ),
@@ -324,16 +336,19 @@ class _WriteGrammarAnswerWidgetState extends State<WriteGrammarAnswerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.exercise.question, style: const TextStyle(fontSize: 20)),
+        Text(
+          widget.exercise.question,
+          style: theme.textTheme.titleMedium?.copyWith(height: 1.4),
+        ),
         const SizedBox(height: 24),
         TextField(
           controller: _controller,
           maxLines: 3,
           decoration: const InputDecoration(
-            border: OutlineInputBorder(),
             hintText: 'Write your sentence',
           ),
           enabled: !_isChecking,
@@ -387,56 +402,58 @@ class FeedbackPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final successColor = theme.colorScheme.primary;
+    final errorColor = theme.colorScheme.error;
     return SafeArea(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
         decoration: BoxDecoration(
-          color: isCorrect
-              ? Colors.green.withOpacity(0.1)
-              : Colors.red.withOpacity(0.1),
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(16),
-          ),
+          color: (isCorrect ? successColor : errorColor).withOpacity(0.12),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ---------- HEADER ----------
             Row(
               children: [
                 Icon(
                   isCorrect ? Icons.check_circle : Icons.cancel,
-                  color: isCorrect ? Colors.green : Colors.red,
+                  color: isCorrect ? successColor : errorColor,
+                  size: 28,
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     isCorrect ? 'Correct!' : 'Needs improvement',
-                    style: const TextStyle(fontSize: 16),
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
-
-            // ---------- CORRECTED SENTENCE ----------
             if (correctAnswer != null) ...[
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Suggested correction:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
+              const SizedBox(height: 4),
               Text(correctAnswer!),
             ],
-
-            // ---------- GRAMMAR EXPLANATIONS ----------
             if (grammarFeedback != null &&
                 grammarFeedback!.explanations.isNotEmpty) ...[
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Why:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               ...grammarFeedback!.explanations.map(
                 (e) => Padding(
@@ -475,23 +492,32 @@ class SessionSummaryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Session Summary')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'You answered $correct out of $total correctly!',
-              style: const TextStyle(fontSize: 22),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              child: const Text('Back to Home'),
-              onPressed: () =>
-                  Navigator.popUntil(context, (route) => route.isFirst),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.celebration_outlined, size: 56, color: theme.colorScheme.primary),
+              const SizedBox(height: 24),
+              Text(
+                'You answered $correct out of $total correctly!',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
+                child: const Text('Back to Home'),
+              ),
+            ],
+          ),
         ),
       ),
     );

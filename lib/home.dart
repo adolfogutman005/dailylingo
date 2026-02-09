@@ -166,10 +166,21 @@ class _ComingSoonPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
-      child: Text(
-        'Coming Soon',
-        style: Theme.of(context).textTheme.headlineSmall,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.construction_outlined, size: 48, color: theme.colorScheme.primary.withOpacity(0.6)),
+          const SizedBox(height: 16),
+          Text(
+            'Coming Soon',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
       ),
     );
   }

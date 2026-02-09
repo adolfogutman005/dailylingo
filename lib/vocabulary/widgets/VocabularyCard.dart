@@ -15,6 +15,7 @@ class VocabularyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ttsService = TtsService();
 
+    final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: InkWell(
@@ -27,32 +28,26 @@ class VocabularyCard extends StatelessWidget {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(14),
           child: Row(
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.text,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
+                child: Text(
+                  item.text,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.volume_up),
+                icon: Icon(Icons.volume_up_outlined, color: theme.colorScheme.primary),
                 onPressed: () {
                   ttsService.speak(item.text, item.language);
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.school),
+                icon: Icon(Icons.school_outlined, color: theme.colorScheme.primary),
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -61,7 +56,7 @@ class VocabularyCard extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.delete),
+                icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
@@ -70,15 +65,16 @@ class VocabularyCard extends StatelessWidget {
                           Provider.of<VocabularyService>(context, listen: false);
                       final navigator = Navigator.of(context);
                       return Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(20),
                         height: 160,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Delete '${item.text}'?",
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             const Text(
@@ -94,7 +90,7 @@ class VocabularyCard extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: theme.colorScheme.error,
                                   ),
                                   onPressed: () async {
                                     navigator.pop();

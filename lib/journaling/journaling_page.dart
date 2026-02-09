@@ -41,7 +41,7 @@ class _JournalingPageState extends State<JournalingPage> {
         children: [
           _startDailyJournaling(),
           const SizedBox(height: 24),
-          _sectionTitle('Challenges'),
+          _sectionTitle('Challenges', context),
           _challengeRow(),
           const SizedBox(height: 16),
           _randomJournalButton(),
@@ -68,11 +68,11 @@ class _JournalingPageState extends State<JournalingPage> {
         final journals = snapshot.data!;
 
         if (journals.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(24),
+          return Padding(
+            padding: const EdgeInsets.all(24),
             child: Text(
               "No journals for this month yet.",
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           );
         }
@@ -149,38 +149,44 @@ class _JournalingPageState extends State<JournalingPage> {
     required IconData icon,
     required String placeholder,
   }) {
-    return InkWell(
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => WriteJournalPage(
-              initialTitle: title,
-              placeholder: placeholder,
+      elevation: 1,
+      shadowColor: Colors.black26,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WriteJournalPage(
+                initialTitle: title,
+                placeholder: placeholder,
+              ),
             ),
+          );
+        },
+        child: Container(
+          width: 140,
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 36, color: theme.colorScheme.primary),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ],
           ),
-        );
-      },
-      child: Ink(
-        width: 140,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-          boxShadow: const [BoxShadow(blurRadius: 6)],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ],
         ),
       ),
     );
@@ -196,6 +202,10 @@ class _JournalingPageState extends State<JournalingPage> {
   Widget _randomJournalButton() {
     return Center(
       child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
         onPressed: () {
           final challenge = _challengeJournals[Random().nextInt(_challengeJournals.length)];
           Navigator.push(
@@ -208,15 +218,6 @@ class _JournalingPageState extends State<JournalingPage> {
             ),
           );
         },
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 32,
-            vertical: 14,
-          ),
-        ),
         child: const Text('Random Journal'),
       ),
     );
@@ -229,16 +230,16 @@ class _JournalingPageState extends State<JournalingPage> {
           .format(DateTime.now().subtract(Duration(days: 30 * i))),
     );
 
-    return Align(
+        return Align(
       alignment: Alignment.centerLeft,
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: selectedMonth,
           icon: const Icon(Icons.expand_more),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           items: months
               .map(
@@ -261,43 +262,51 @@ class _JournalingPageState extends State<JournalingPage> {
   Widget _journalTile(JournalEntry entry) {
     final month = DateFormat('MMM').format(entry.date).toUpperCase();
     final day = DateFormat('d').format(entry.date);
+    final theme = Theme.of(context);
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: SizedBox(
-        width: 48,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              month,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: SizedBox(
+          width: 44,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                month,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
+                ),
               ),
-            ),
-            Text(
-              day,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              Text(
+                day,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      title: Text(entry.title),
-      subtitle: Text(
-        entry.content.replaceAll('\n', ' '),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete_outline, color: Colors.red),
-        onPressed: () => _confirmDelete(entry),
-      ),
-      onTap: () {
+        title: Text(
+          entry.title,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        subtitle: Text(
+          entry.content.replaceAll('\n', ' '),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 13, color: theme.colorScheme.onSurfaceVariant),
+        ),
+        trailing: IconButton(
+          icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+          onPressed: () => _confirmDelete(entry),
+        ),
+        onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -305,18 +314,19 @@ class _JournalingPageState extends State<JournalingPage> {
           ),
         );
       },
+    ),
     );
   }
 }
 
-Widget _sectionTitle(String title) {
+Widget _sectionTitle(String title, BuildContext context) {
   return Padding(
-    padding: const EdgeInsets.only(bottom: 8),
+    padding: const EdgeInsets.only(bottom: 10),
     child: Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     ),
   );

@@ -106,23 +106,30 @@ class _HomePageState extends State<HomePage> {
     final lang = isSource ? currentSourceLang : currentTargetLang;
 
     return Card(
-      elevation: 6,
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Language selector
             InkWell(
               onTap: () => _openLanguageSelector(isSource),
-              child: Row(
-                children: [
-                  Text(
-                    lang,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const Icon(Icons.arrow_drop_down),
-                ],
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    Text(
+                      lang,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const Icon(Icons.arrow_drop_down, size: 20),
+                  ],
+                ),
               ),
             ),
 
@@ -170,6 +177,10 @@ class _HomePageState extends State<HomePage> {
                                 (_debounce?.isActive ?? false)
                             ? "Translating..."
                             : "Translation"),
+                    style: TextStyle(
+                      color: targetText.isEmpty ? Colors.grey.shade600 : null,
+                      fontSize: 16,
+                    ),
                   ),
 
             const SizedBox(height: 8),
@@ -333,22 +344,39 @@ class _HomePageState extends State<HomePage> {
           final isSelected = _sameDay(date, selectedDate);
           final isFuture = date.isAfter(today);
 
+          final theme = Theme.of(context);
           return GestureDetector(
             onTap: isFuture ? null : () => setState(() => selectedDate = date),
             child: Container(
-              width: 60,
-              margin: const EdgeInsets.symmetric(horizontal: 6),
+              width: 56,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.blue : Colors.grey.shade200,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.surfaceContainerHighest.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: isSelected
+                    ? [BoxShadow(color: theme.colorScheme.primary.withOpacity(0.3), blurRadius: 6, offset: const Offset(0, 2))]
+                    : null,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(_weekday(date)),
+                  Text(
+                    _weekday(date),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: isSelected ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   Text(
                     "${date.day}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                    ),
                   ),
                 ],
               ),
@@ -363,9 +391,10 @@ class _HomePageState extends State<HomePage> {
 
   Widget _dayInformation() {
     final bool isToday = _sameDay(selectedDate, DateTime.now());
+    final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -376,20 +405,28 @@ class _HomePageState extends State<HomePage> {
                 child: const Text("Start Daily Challenge"),
               ),
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
             isToday ? "To Do" : "Done",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Card(
             child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: Icon(Icons.menu_book_outlined, color: theme.colorScheme.primary),
               title: const Text("Read"),
               subtitle: const Text("Pages read: 8"),
             ),
           ),
+          const SizedBox(height: 6),
           Card(
             child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: Icon(Icons.school_outlined, color: theme.colorScheme.primary),
               title: const Text("Vocabulary"),
               subtitle: const Text("Words learned: 3"),
             ),

@@ -14,33 +14,39 @@ class PrimaryActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 320),
-        child: InkWell(
+        child: Material(
+          color: primary.withOpacity(0.08),
           borderRadius: BorderRadius.circular(14),
-          onTap: isLoading ? null : onTap,
-          child: Container(
-            height: 80,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              color: Colors.blue.shade50,
-              border: Border.all(color: Colors.blue),
-            ),
-            child: isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(
-                    text,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: isLoading ? null : onTap,
+            child: Container(
+              height: 80,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: primary.withOpacity(0.3)),
+              ),
+              child: isLoading
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: primary),
+                    )
+                  : Text(
+                      text,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: primary,
+                      ),
                     ),
-                  ),
+            ),
           ),
         ),
       ),
