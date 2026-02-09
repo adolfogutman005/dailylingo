@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
 import 'write_journal_page.dart';
 import 'journal_detail_page.dart';
 import '../PrimaryActionCard.dart';
+import 'models/journal.dart';
+import '../services/vocabulary_service.dart';
 
 class JournalingPage extends StatefulWidget {
   const JournalingPage({super.key});
@@ -12,55 +16,21 @@ class JournalingPage extends StatefulWidget {
 }
 
 class _JournalingPageState extends State<JournalingPage> {
-  String selectedMonth = 'February 2026';
+  String selectedMonth = DateFormat('MMMM yyyy').format(DateTime.now());
 
-  final Map<String, List<JournalEntry>> journalsByMonth = {
-    'February 2026': [
-      JournalEntry(
-        DateTime(2026, 2, 5),
-        'A calm day',
-        '''Today felt unusually calm. I woke up earlier than usual and decided not to check my phone immediately.
+  late VocabularyService vocabularyService;
 
-Instead, I made coffee and sat near the window while the city was still quiet. I spent most of the morning reading and reflecting on how fast the past weeks have gone by.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    vocabularyService = Provider.of<VocabularyService>(context);
+  }
 
-There was no rush, no pressure — just a quiet sense of focus. I wish more days felt like this.''',
-      ),
-      JournalEntry(
-        DateTime(2026, 2, 3),
-        'Music thoughts',
-        '''I listened to an old song today that immediately brought back memories from years ago.
-
-It’s strange how music can transport you to a completely different time — almost like opening a door you forgot existed.
-
-For a few minutes, I wasn’t thinking about the present at all. Just memories, feelings, and how much has changed since then.''',
-      ),
-    ],
-    'January 2026': [
-      JournalEntry(
-        DateTime(2026, 1, 28),
-        'New goals',
-        '''This month I want to focus on building things consistently.
-
-Not huge projects — just steady progress every day. Even one hour of deep work is better than scattered effort.
-
-If I can maintain that rhythm, the results will compound.''',
-      ),
-      JournalEntry(
-        DateTime(2026, 1, 14),
-        'Rainy afternoon',
-        '''It rained almost the entire afternoon, so I stayed home.
-
-Made some tea, organized my desk, and finally finished a book I had been postponing.
-
-Sometimes slowing down is exactly what you need.''',
-      ),
-    ],
-  };
+  DateTime get _selectedMonthDate =>
+      DateFormat('MMMM yyyy').parse(selectedMonth);
 
   @override
   Widget build(BuildContext context) {
-    final journals = journalsByMonth[selectedMonth]!;
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -75,16 +45,56 @@ Sometimes slowing down is exactly what you need.''',
           const SizedBox(height: 32),
           _monthSelector(),
           const SizedBox(height: 12),
-          ...journals.map(_journalTile),
+          _journalsList(),
         ],
       ),
+    );
+  }
+
+  // ---------- DATA ----------
+
+  Widget _journalsList() {
+    return StreamBuilder<List<JournalEntry>>(
+      stream: vocabularyService.watchJournalsForMonth(_selectedMonthDate),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final journals = snapshot.data!;
+
+        if (journals.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              "No journals for this month yet.",
+              style: TextStyle(color: Colors.grey),
+            ),
+          );
+        }
+
+        return Column(
+          children: journals.map(_journalTile).toList(),
+        );
+      },
     );
   }
 
   // ---------- UI ----------
 
   Widget _startDailyJournaling() {
-    return PrimaryActionCard(text: "Start Daily Journaling", onTap: () => {});
+    return PrimaryActionCard(
+      text: "Start Daily Journaling",
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const WriteJournalPage()),
+        );
+      },
+    );
   }
 
   Widget _challengeRow() {
@@ -120,18 +130,20 @@ Sometimes slowing down is exactly what you need.''',
         itemBuilder: (context, index) {
           final item = challenges[index];
           return _challengeCard(
-              title: item['title'] as String,
-              icon: item['icon'] as IconData,
-              placeholder: item['placeholder'] as String);
+            title: item['title'] as String,
+            icon: item['icon'] as IconData,
+            placeholder: item['placeholder'] as String,
+          );
         },
       ),
     );
   }
 
-  Widget _challengeCard(
-      {required String title,
-      required IconData icon,
-      required String placeholder}) {
+  Widget _challengeCard({
+    required String title,
+    required IconData icon,
+    required String placeholder,
+  }) {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
@@ -151,9 +163,7 @@ Sometimes slowing down is exactly what you need.''',
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: Colors.white,
-          boxShadow: const [
-            BoxShadow(blurRadius: 6),
-          ],
+          boxShadow: const [BoxShadow(blurRadius: 6)],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -190,6 +200,12 @@ Sometimes slowing down is exactly what you need.''',
   }
 
   Widget _monthSelector() {
+    final months = List.generate(
+      6,
+      (i) => DateFormat('MMMM yyyy')
+          .format(DateTime.now().subtract(Duration(days: 30 * i))),
+    );
+
     return Align(
       alignment: Alignment.centerLeft,
       child: DropdownButtonHideUnderline(
@@ -201,7 +217,7 @@ Sometimes slowing down is exactly what you need.''',
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
-          items: journalsByMonth.keys
+          items: months
               .map(
                 (month) => DropdownMenuItem(
                   value: month,
@@ -250,10 +266,9 @@ Sometimes slowing down is exactly what you need.''',
       ),
       title: Text(entry.title),
       subtitle: Text(
-        entry.content.replaceAll('\n', ' '), // prevents line break glitches
+        entry.content.replaceAll('\n', ' '),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        softWrap: false,
       ),
       onTap: () {
         Navigator.push(
@@ -278,14 +293,4 @@ Widget _sectionTitle(String title) {
       ),
     ),
   );
-}
-
-// ---------- Model ----------
-
-class JournalEntry {
-  final DateTime date;
-  final String title;
-  final String content;
-
-  JournalEntry(this.date, this.title, this.content);
 }

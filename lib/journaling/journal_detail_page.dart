@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'journaling.dart';
 import 'feedback_page.dart';
 import 'models/corrections.dart';
 import 'models/feedback_data.dart';
+import 'models/journal.dart';
 
 class JournalDetailPage extends StatefulWidget {
   final JournalEntry entry;

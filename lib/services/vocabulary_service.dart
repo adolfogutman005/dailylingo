@@ -6,6 +6,7 @@ import '../vocabulary/models/vocabulary_item.dart';
 import '../translator_service.dart';
 import '../journaling/models/journal_feedback_model.dart';
 import '../journaling/models/feedback_data.dart';
+import '../journaling/models/journal.dart';
 import '../exercises/models/grammar_feedback.dart';
 import '../exercises/models/grammar_multiple_choice.dart';
 
@@ -149,6 +150,10 @@ class VocabularyService {
     String concept,
   ) async {
     return _repo.generateGrammarMultipleChoice(concept);
+  }
+
+  Stream<List<JournalEntry>> watchJournalsForMonth(DateTime month) {
+    return _repo.watchJournalsForMonth(month);
   }
 
   Future<void> debugPrintAllWords() async {

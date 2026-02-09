@@ -7,6 +7,7 @@ import '../../translator_service.dart';
 import '../../language_codes.dart';
 import '../../journaling/models/journal_feedback_model.dart';
 import '../../journaling/models/corrections.dart';
+import '../../journaling/models/journal.dart';
 import '../../exercises/models/grammar_feedback.dart';
 import '../../exercises/models/grammar_multiple_choice.dart';
 
@@ -322,6 +323,28 @@ class VocabularyRepository {
     );
 
     return result;
+  }
+
+  Stream<List<JournalEntry>> watchJournalsForMonth(DateTime month) {
+    final start = DateTime(month.year, month.month);
+    final end = DateTime(month.year, month.month + 1);
+
+    return (db.select(db.journals)
+          ..where((j) => j.createdAt.isBetweenValues(start, end))
+          ..orderBy([(j) => OrderingTerm.desc(j.createdAt)]))
+        .watch()
+        .map(
+          (rows) => rows
+              .map(
+                (j) => JournalEntry(
+                  j.id,
+                  j.createdAt,
+                  j.title,
+                  j.contentCorrected ?? j.contentOriginal,
+                ),
+              )
+              .toList(),
+        );
   }
 
   Future<GrammarMultipleChoiceResult> generateGrammarMultipleChoice(
