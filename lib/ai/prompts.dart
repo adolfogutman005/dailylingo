@@ -198,3 +198,33 @@ Return ONLY valid JSON in this format:
 }
 ''';
 }
+
+String grammarMultipleChoicePrompt({
+  required String concept,
+}) {
+  return '''
+You are a language teacher creating a grammar multiple-choice exercise.
+
+Grammar concept: "$concept"
+
+Generate:
+- ONE sentence that uses the concept correctly
+- THREE sentences that are incorrect but realistic learner mistakes
+
+Rules:
+- Only one sentence must be correct
+- Incorrect sentences must clearly violate the concept
+- Sentences should be natural and similar in difficulty
+
+Return ONLY valid JSON in this format:
+
+{
+  "correct": "Correct sentence here",
+  "distractors": [
+    "Incorrect sentence 1",
+    "Incorrect sentence 2",
+    "Incorrect sentence 3"
+  ]
+}
+''';
+}

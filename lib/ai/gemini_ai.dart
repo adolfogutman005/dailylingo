@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'prompts.dart';
 import '../exercises/models/grammar_feedback.dart';
+import '../exercises/models/grammar_multiple_choice.dart';
 
 /// Gemini AI helper for fetching text responses
 class GeminiAI {
@@ -175,6 +176,29 @@ class GeminiAI {
         isCorrect: false,
         correctedSentence: sentence,
         explanations: ['Unable to analyze the sentence. Please try again.'],
+      );
+    }
+  }
+
+  Future<GrammarMultipleChoiceResult> generateGrammarMultipleChoice({
+    required String concept,
+  }) async {
+    final prompt = grammarMultipleChoicePrompt(concept: concept);
+    final raw = await _callGemini(prompt);
+
+    try {
+      final jsonString = extractFirstJsonObject(raw);
+      final parsed = jsonDecode(jsonString);
+
+      return GrammarMultipleChoiceResult(
+        correct: parsed['correct'] as String,
+        distractors: List<String>.from(parsed['distractors']),
+      );
+    } catch (e) {
+      print('Grammar MC parse error: $e\nRaw:\n$raw');
+      return GrammarMultipleChoiceResult(
+        correct: '',
+        distractors: [],
       );
     }
   }

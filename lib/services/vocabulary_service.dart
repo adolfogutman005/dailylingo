@@ -7,6 +7,7 @@ import '../translator_service.dart';
 import '../journaling/models/journal_feedback_model.dart';
 import '../journaling/models/feedback_data.dart';
 import '../exercises/models/grammar_feedback.dart';
+import '../exercises/models/grammar_multiple_choice.dart';
 
 class VocabularyService {
   late final VocabularyRepository _repo;
@@ -142,6 +143,12 @@ class VocabularyService {
       concept: concept,
       sentence: sentence,
     );
+  }
+
+  Future<GrammarMultipleChoiceResult> getGrammarMultipleChoice(
+    String concept,
+  ) async {
+    return _repo.generateGrammarMultipleChoice(concept);
   }
 
   Future<void> debugPrintAllWords() async {

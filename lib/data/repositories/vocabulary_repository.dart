@@ -8,6 +8,7 @@ import '../../language_codes.dart';
 import '../../journaling/models/journal_feedback_model.dart';
 import '../../journaling/models/corrections.dart';
 import '../../exercises/models/grammar_feedback.dart';
+import '../../exercises/models/grammar_multiple_choice.dart';
 
 class VocabularyRepository {
   final AppDatabase db;
@@ -321,6 +322,12 @@ class VocabularyRepository {
     );
 
     return result;
+  }
+
+  Future<GrammarMultipleChoiceResult> generateGrammarMultipleChoice(
+    String concept,
+  ) async {
+    return ai.generateGrammarMultipleChoice(concept: concept);
   }
 
   Future<void> debugPrintAllWords() async {

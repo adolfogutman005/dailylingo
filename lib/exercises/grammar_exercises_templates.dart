@@ -24,17 +24,17 @@ class GrammarExerciseTemplates {
     VocabularyService vocab,
     String concept,
   ) async {
+    final result = await vocab.getGrammarMultipleChoice(concept);
+
     final options = [
-      'Incorrect example 1',
-      'Correct example',
-      'Incorrect example 2',
-      'Incorrect example 3',
-    ];
+      result.correct,
+      ...result.distractors,
+    ]..shuffle();
 
     return Exercise.fourOptions(
       question: 'Which sentence uses "$concept" correctly?',
-      options: options..shuffle(), // shuffle for randomness
-      answer: 'Correct example',
+      options: options,
+      answer: result.correct,
     );
   }
 }
