@@ -3,6 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'models/corrections.dart';
 import 'models/feedback_data.dart';
 
+import 'package:provider/provider.dart';
+import '../services/vocabulary_service.dart';
+
 /// ----------------------
 /// PAGE
 /// ----------------------
@@ -26,6 +29,8 @@ class _FeedbackPageState extends State<FeedbackPage>
 
   late List<TextEditingController> conceptControllers;
   late List<FocusNode> conceptFocusNodes;
+
+  late VocabularyService vocabularyService;
 
   /// Active filters
   Set<CorrectionType> activeFilters = {
@@ -59,6 +64,43 @@ class _FeedbackPageState extends State<FeedbackPage>
       n.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    vocabularyService = Provider.of<VocabularyService>(context, listen: true);
+  }
+
+  Future<void> _save({required bool withFeedback}) async {
+    // Build updated FeedbackData
+    final updatedFeedback = FeedbackData(
+      title: _titleController.text,
+      originalContent: widget.feedback.originalContent,
+      correctedContent: widget.feedback.correctedContent,
+      corrections: withFeedback ? editableCorrections : [],
+      conceptsLearned: withFeedback ? learnedConcepts : [],
+    );
+
+    try {
+      final journalId = await vocabularyService.saveJournal(
+        updatedFeedback,
+        saveFeedback: withFeedback,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Saved successfully! (ID: $journalId)')),
+      );
+
+      Navigator.pop(context); // go back after save
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving: $e')),
+      );
+    }
   }
 
   Color _highlightColor({
@@ -447,7 +489,7 @@ class _FeedbackPageState extends State<FeedbackPage>
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              _save(withFeedback: false);
             },
             child: const Text("Save without Feedback"),
           ),
@@ -455,7 +497,7 @@ class _FeedbackPageState extends State<FeedbackPage>
           OutlinedButton(
             onPressed: () {
               // Add Database Saving Logic
-              Navigator.pop(context);
+              _save(withFeedback: true);
             },
             child: const Text("Save"),
           ),

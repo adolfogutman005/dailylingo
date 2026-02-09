@@ -107,14 +107,12 @@ class VocabularyService {
 
   Future<int> saveJournal(FeedbackData feedback,
       {bool saveFeedback = true}) async {
-    // 1️⃣ Save the journal itself via repository
     final journalId = await _repo.saveJournal(
       title: feedback.title,
       originalContent: feedback.originalContent,
       correctedContent: feedback.correctedContent,
     );
 
-    // 2️⃣ Save feedback if requested
     if (saveFeedback) {
       await _repo.saveCorrections(journalId, feedback.corrections);
       await _repo.saveConcepts(journalId, feedback.conceptsLearned);
