@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/base_exercise.dart';
+import 'models/grammar_feedback.dart';
 import 'models/exercise.dart';
 import 'models/grammar_evaluator_exercise.dart';
 import '../services/vocabulary_service.dart';
@@ -20,6 +21,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   int currentExerciseIndex = 0;
   bool? lastAnswerCorrect;
   String? lastCorrectAnswer;
+  GrammarFeedback? lastGrammarFeedback;
 
   int correctCount = 0;
 
@@ -75,6 +77,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
       setState(() {
         lastAnswerCorrect = feedback.isCorrect;
         lastCorrectAnswer = feedback.correctedSentence;
+        lastGrammarFeedback = feedback;
       });
       return;
     }
@@ -90,6 +93,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
         currentExerciseIndex++;
         lastAnswerCorrect = null;
         lastCorrectAnswer = null;
+        lastGrammarFeedback = null;
       });
     } else {
       Navigator.pushReplacement(
@@ -152,6 +156,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
               child: FeedbackPanel(
                 isCorrect: lastAnswerCorrect!,
                 correctAnswer: lastCorrectAnswer,
+                grammarFeedback: lastGrammarFeedback,
                 onNext: nextExercise,
               ),
             ),
@@ -330,12 +335,14 @@ class _WriteGrammarAnswerWidgetState extends State<WriteGrammarAnswerWidget> {
 class FeedbackPanel extends StatelessWidget {
   final bool isCorrect;
   final String? correctAnswer;
+  final GrammarFeedback? grammarFeedback;
   final VoidCallback onNext;
 
   const FeedbackPanel({
     super.key,
     required this.isCorrect,
     required this.correctAnswer,
+    this.grammarFeedback,
     required this.onNext,
   });
 
@@ -355,7 +362,9 @@ class FeedbackPanel extends StatelessWidget {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ---------- HEADER ----------
             Row(
               children: [
                 Icon(
@@ -365,14 +374,39 @@ class FeedbackPanel extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    isCorrect
-                        ? 'Correct!'
-                        : 'Incorrect\nCorrect answer:\n$correctAnswer',
-                    style: const TextStyle(fontSize: 16, height: 1.4),
+                    isCorrect ? 'Correct!' : 'Needs improvement',
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ],
             ),
+
+            // ---------- CORRECTED SENTENCE ----------
+            if (correctAnswer != null) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Suggested correction:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(correctAnswer!),
+            ],
+
+            // ---------- GRAMMAR EXPLANATIONS ----------
+            if (grammarFeedback != null &&
+                grammarFeedback!.explanations.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Why:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...grammarFeedback!.explanations.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text('• $e'),
+                ),
+              ),
+            ],
+
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
