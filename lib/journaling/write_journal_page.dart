@@ -1,6 +1,8 @@
+import 'package:dailylingo/journaling/models/feedback_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/vocabulary_service.dart'; // modify later to journal service
+import 'feedback_page.dart';
 
 class WriteJournalPage extends StatefulWidget {
   final String? initialTitle;
@@ -87,12 +89,34 @@ class _WriteJournalPageState extends State<WriteJournalPage> {
               onPressed: () async {
                 final feedback = await vocabularyService.getFeedback(
                     journalText: _contentController.text.trim());
-                Navigator.push(context, 
-                  MaterialPageRoute(builder: (_) => FeedbackPage{feedback})
-                );
 
+                /// PRINT FOR DEBUGGING
+                print("Corrected Content: ${feedback.correctedContent}");
+
+                print("Corrections:");
+                for (var c in feedback.corrections) {
+                  print(
+                      "- [${c.type}] '${c.wrong}' → '${c.right}' | Concept: ${c.concept}");
+                }
+
+                print("Learned Concepts:");
+                for (var concept in feedback.conceptsLearned) {
+                  print("- $concept");
+                }
+
+                final feedbackData = FeedbackData(
+                    title: _titleController.text.trim(),
+                    originalContent: _contentController.text.trim(),
+                    correctedContent: feedback.correctedContent,
+                    corrections: feedback.corrections,
+                    conceptsLearned: feedback.conceptsLearned);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => FeedbackPage(
+                              feedback: feedbackData,
+                            )));
               },
-              
               child: const Text('Feedback'),
             ),
             const SizedBox(width: 8),

@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'models/corrections.dart';
+import 'models/feedback_data.dart';
 
 /// ----------------------
 /// PAGE
 /// ----------------------
 
 class FeedbackPage extends StatefulWidget {
-  final String title;
-  final String originalContent;
-  final String correctedContent;
-  final List<Correction> corrections;
+  final FeedbackData feedback;
 
-  const FeedbackPage({
-    super.key,
-    required this.title,
-    required this.originalContent,
-    required this.correctedContent,
-    required this.corrections,
-  });
+  const FeedbackPage({super.key, required this.feedback});
 
   @override
   State<FeedbackPage> createState() => _FeedbackPageState();
@@ -35,18 +27,11 @@ class _FeedbackPageState extends State<FeedbackPage>
     CorrectionType.suggestion,
   };
 
-  List<String> get learnedConcepts {
-    final concepts = widget.corrections.map((c) => c.concept).toSet().toList();
-
-    concepts.sort();
-    return concepts;
-  }
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _titleController = TextEditingController(text: widget.title);
+    _titleController = TextEditingController(text: widget.feedback.title);
   }
 
   @override
@@ -83,8 +68,65 @@ class _FeedbackPageState extends State<FeedbackPage>
     }
   }
 
+  Widget buildFeedbackTile() {
+    final corrections = widget.feedback.corrections;
+
+    if (corrections.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        leading: const Icon(Icons.feedback, color: Colors.blue),
+        title: const Text(
+          "Feedback",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Text(
+          "${corrections.length} correction${corrections.length == 1 ? '' : 's'}",
+          style: const TextStyle(fontSize: 13),
+        ),
+        children: corrections.map((c) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  c.type == CorrectionType.grammar
+                      ? Icons.rule_rounded
+                      : Icons.lightbulb_outline,
+                  size: 18,
+                  color: c.type == CorrectionType.grammar
+                      ? Colors.redAccent
+                      : Colors.orange,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    c.wrong, // For now we just show the wrong part
+                    style: const TextStyle(fontSize: 15, height: 1.4),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget buildLearnedConcepts() {
-    final concepts = learnedConcepts;
+    final concepts = widget.feedback.conceptsLearned;
 
     if (concepts.isEmpty) return const SizedBox.shrink();
 
@@ -132,7 +174,7 @@ class _FeedbackPageState extends State<FeedbackPage>
   }
 
   Widget buildHighlightedText() {
-    final text = widget.originalContent;
+    final text = widget.feedback.originalContent;
 
     const baseStyle = TextStyle(
       fontSize: 16,
@@ -140,7 +182,7 @@ class _FeedbackPageState extends State<FeedbackPage>
       color: Colors.black87,
     );
 
-    final active = widget.corrections
+    final active = widget.feedback.corrections
         .where((c) => activeFilters.contains(c.type))
         .toList();
 
@@ -411,7 +453,11 @@ class _FeedbackPageState extends State<FeedbackPage>
                   child: SingleChildScrollView(
                       child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [buildHighlightedText(), buildLearnedConcepts()],
+                    children: [
+                      buildHighlightedText(),
+                      buildFeedbackTile(),
+                      buildLearnedConcepts()
+                    ],
                   )),
                 ),
               ],
@@ -423,7 +469,8 @@ class _FeedbackPageState extends State<FeedbackPage>
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
               child: Text(
-                widget.correctedContent, // Later replace with corrected version
+                widget.feedback
+                    .correctedContent, // Later replace with corrected version
                 style: const TextStyle(
                   fontSize: 16,
                   height: 1.5,

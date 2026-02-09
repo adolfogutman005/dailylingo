@@ -110,7 +110,6 @@ String journalFeedbackPrompt(String text) {
   return '''
 You are a language teacher.
 
-
 Return ONLY valid JSON.
 DO NOT include explanations outside JSON.
 DO NOT include markdown.
@@ -138,6 +137,28 @@ JSON format:
     }
   ],
   "conceptsLearned": []
+}
+
+Example:
+
+Sentence: "I go to the park yesterday"
+
+Expected JSON:
+{
+  "correctedContent": "I went to the park yesterday",
+  "corrections": [
+    {
+      "start": 2,
+      "end": 4,
+      "wrong": "go",
+      "right": "went",
+      "explanation": "The verb 'go' is irregular, and its past tense is 'went'.",
+      "example": "I went to school yesterday.",
+      "type": "grammar",
+      "concept": "Past tense of go"
+    }
+  ],
+  "conceptsLearned": ["Past tense of go"]
 }
 
 TEXT (do not rewrite it):
