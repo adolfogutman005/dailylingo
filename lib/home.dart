@@ -1,326 +1,176 @@
 import 'package:flutter/material.dart';
+import 'home_page.dart';
+import 'journaling/journaling_page.dart';
+import 'vocabulary/pages/vocabulary_page.dart';
+import 'journaling/write_journal_page.dart';
+import 'services/vocabulary_service.dart';
 import 'package:provider/provider.dart';
-import 'state/user_settings_state.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainPageState extends State<MainPage> {
-  // -------- SESSION STATE (TEMPORARY) --------
-  late String currentSourceLang;
-  late String currentTargetLang;
+class _MainScreenState extends State<MainScreen> {
+  int _currentIndex = 2;
 
-  String sourceText = "";
-  String targetText = "";
-  DateTime selectedDate = DateTime.now();
+  final List<Widget> _pages = [
+    const _ComingSoonPage(title: 'Reading'),
+    const JournalingPage(),
+    const HomePage(),
+    const _ComingSoonPage(title: 'Note Taking'),
+    const VocabularyPage(),
+  ];
 
-  final TextEditingController sourceController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    // initialize from user defaults ONCE
-    final userSettings = context.read<UserSettingsState>();
-    currentSourceLang = userSettings.settings.sourceLang;
-    currentTargetLang = userSettings.settings.targetLang;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+  PreferredSizeWidget? buildAppBar(int index) {
+    final appBars = {
+      0: AppBar(title: const Text('Reading')),
+      1: AppBar(
+        title: const Text('Journal'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      2: AppBar(
         title: const Text("Dailylingo"),
         actions: [
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
         ],
       ),
-
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _translatorSection(),
-            const SizedBox(height: 20),
-            _calendarStrip(),
-            const SizedBox(height: 12),
-            _dayInformation(),
-          ],
-        ),
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Habit1"),
-          BottomNavigationBarItem(icon: Icon(Icons.edit), label: "Habit2"),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: "Habit3"),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Habit4"),
+      3: AppBar(title: const Text('Note Taking')),
+      4: AppBar(
+        title: const Text("Vocabulary"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {},
+          ),
         ],
       ),
-    );
+    };
+
+    return appBars[index];
   }
 
-  // ---------------- TRANSLATOR ----------------
+  // Dictionary for FAB per tab
+  final Map<int, FloatingActionButton> _fabs = {};
 
-  Widget _translatorSection() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final horizontal = constraints.maxWidth > 700;
+  @override
+  void initState() {
+    super.initState();
 
-        return Padding(
-          padding: const EdgeInsets.all(12),
-          child: horizontal
-              ? Row(
-                  children: [
-                    Expanded(child: _translatorPanel(true)),
-                    const SizedBox(width: 8),
-                    Expanded(child: _translatorPanel(false)),
-                  ],
-                )
-              : Column(
-                  children: [
-                    _translatorPanel(true),
-                    const SizedBox(height: 8),
-                    _translatorPanel(false),
-                  ],
-                ),
+    // Define FABs
+    _fabs[1] = FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const WriteJournalPage()),
         );
       },
+      child: const Icon(Icons.edit),
     );
+
+    _fabs[2] = generalFAB(context: context);
+    _fabs[4] = generalFAB(context: context);
   }
 
-  Widget _translatorPanel(bool isSource) {
-    final lang = isSource ? currentSourceLang : currentTargetLang;
-
-    return Card(
-      elevation: 6,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Language selector
-            InkWell(
-              onTap: () => _openLanguageSelector(isSource),
-              child: Row(
-                children: [
-                  Text(
-                    lang,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const Icon(Icons.arrow_drop_down),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            // Text area
-            isSource
-                ? TextField(
-                    controller: sourceController,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      hintText: "Enter text",
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (v) {
-                      setState(() {
-                        sourceText = v;
-                        targetText = ""; // placeholder
-                      });
-                    },
-                  )
-                : SelectableText(
-                    targetText.isEmpty ? "Translation" : targetText,
-                  ),
-
-            const SizedBox(height: 8),
-
-            // Buttons
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.volume_up),
-                    onPressed: () {},
-                  ),
-                  if (isSource)
-                    IconButton(
-                      icon: const Icon(Icons.swap_horiz),
-                      onPressed: _swapLanguages,
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: buildAppBar(_currentIndex),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Reading"),
+          BottomNavigationBarItem(icon: Icon(Icons.edit), label: "Journaling"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.school), label: "Note Taking"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart), label: "Vocabulary"),
+        ],
+      ),
+      floatingActionButton: _fabs[_currentIndex],
     );
   }
+}
 
-  void _swapLanguages() {
-    setState(() {
-      final tempLang = currentSourceLang;
-      currentSourceLang = currentTargetLang;
-      currentTargetLang = tempLang;
+FloatingActionButton generalFAB({
+  required BuildContext context,
+}) {
+  return FloatingActionButton(
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) {
+          final TextEditingController _controller = TextEditingController();
+          final vocabularyService =
+              Provider.of<VocabularyService>(context, listen: false);
 
-      final tempText = sourceText;
-      sourceText = targetText;
-      targetText = tempText;
-
-      sourceController.text = sourceText;
-    });
-  }
-
-  void _openLanguageSelector(bool isSource) {
-    final allLanguages = [
-      "English",
-      "Spanish",
-      "French",
-      "German",
-      "Portuguese",
-      "Italian",
-      "Chinese",
-      "Japanese",
-      "Korean",
-      "Arabic",
-    ];
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        String query = "";
-        List<String> filtered = List.from(allLanguages);
-
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16,
-                right: 16,
-                top: 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: "Search language",
-                    ),
-                    onChanged: (value) {
-                      setModalState(() {
-                        query = value.toLowerCase();
-                        filtered = allLanguages
-                            .where((l) => l.toLowerCase().contains(query))
-                            .toList();
-                      });
-                    },
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  SizedBox(
-                    height: 300,
-                    child: ListView.builder(
-                      itemCount: filtered.length,
-                      itemBuilder: (context, index) {
-                        final lang = filtered[index];
-                        return ListTile(
-                          title: Text(lang),
-                          onTap: () {
-                            setState(() {
-                              if (isSource) {
-                                currentSourceLang = lang;
-                              } else {
-                                currentTargetLang = lang;
-                              }
-                            });
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  // ---------------- CALENDAR ----------------
-
-  Widget _calendarStrip() {
-    final today = DateTime.now();
-    const totalDays = 15;
-    const middleIndex = totalDays ~/ 2;
-
-    return SizedBox(
-      height: 70,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: totalDays,
-        itemBuilder: (context, i) {
-          final date = today.add(Duration(days: i - middleIndex));
-          final isSelected = _sameDay(date, selectedDate);
-          final isFuture = date.isAfter(today);
-
-          return GestureDetector(
-            onTap: isFuture ? null : () => setState(() => selectedDate = date),
-            child: Container(
-              width: 60,
-              margin: const EdgeInsets.symmetric(horizontal: 6),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.blue : Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(_weekday(date)),
-                  Text(
-                    "${date.day}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
+          return AlertDialog(
+            title: const Text("Add Word or Phrase"),
+            content: TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                hintText: "Enter word or phrase",
               ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(), // Close dialog
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String inputText = _controller.text.trim();
+                  if (inputText.isNotEmpty) {
+                    await vocabularyService.saveVocabulary(
+                        text: inputText,
+                        source: 'General',
+                        sourceLang: 'English',
+                        targetLang: 'Spanish');
+                    Navigator.of(context).pop();
+                    // TODO: Use user settings languages                      _controller.clear(); // Clear text
+                  }
+                },
+                child: const Text("Save"),
+              ),
+            ],
           );
         },
+      );
+    },
+    child: const Icon(Icons.add),
+  );
+}
+
+class _ComingSoonPage extends StatelessWidget {
+  final String title;
+
+  const _ComingSoonPage({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'Coming Soon',
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
-
-  // ---------------- DAY INFO ----------------
-
-  Widget _dayInformation() {
-    return const SizedBox(height: 200); // unchanged placeholder
-  }
-
-  // ---------------- HELPERS ----------------
-
-  bool _sameDay(DateTime a, DateTime b) =>
-      a.year == b.year && a.month == b.month && a.day == b.day;
-
-  String _weekday(DateTime d) =>
-      ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][d.weekday - 1];
 }
