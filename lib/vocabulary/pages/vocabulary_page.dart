@@ -39,15 +39,22 @@ class VocabularyPage extends StatelessWidget {
   }
 }
 
-class _GrammarTab extends StatelessWidget {
+class _GrammarTab extends StatefulWidget {
   final VocabularyService vocabularyService;
 
   const _GrammarTab({required this.vocabularyService});
 
   @override
+  State<_GrammarTab> createState() => _GrammarTabState();
+}
+
+class _GrammarTabState extends State<_GrammarTab> {
+  String? _loadingConcept;
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<String>>(
-      future: vocabularyService.getAllGrammarConcepts(),
+      future: widget.vocabularyService.getAllGrammarConcepts(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -71,6 +78,7 @@ class _GrammarTab extends StatelessWidget {
           separatorBuilder: (_, __) => const Divider(),
           itemBuilder: (context, index) {
             final concept = concepts[index];
+            final isLoading = _loadingConcept == concept;
             return ListTile(
               leading: const Icon(
                 Icons.check_circle_outline,
@@ -78,23 +86,44 @@ class _GrammarTab extends StatelessWidget {
               ),
               title: Text(concept),
               trailing: ElevatedButton(
-                onPressed: () async {
-                  final practiceService = PracticeService(vocabularyService);
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _loadingConcept = concept;
+                        });
 
-                  final exercises =
-                      await practiceService.getGrammarExercises(concept);
+                        try {
+                          final practiceService =
+                              PracticeService(widget.vocabularyService);
 
-                  if (!context.mounted || exercises.isEmpty) return;
+                          final exercises =
+                              await practiceService.getGrammarExercises(concept);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          PracticeItemPage(exercisesOverride: exercises),
-                    ),
-                  );
-                },
-                child: const Text("Practice"),
+                          if (!mounted || exercises.isEmpty) return;
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  PracticeItemPage(exercisesOverride: exercises),
+                            ),
+                          );
+                        } finally {
+                          if (mounted) {
+                            setState(() {
+                              _loadingConcept = null;
+                            });
+                          }
+                        }
+                      },
+                child: isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text("Practice"),
               ),
             );
           },
@@ -104,10 +133,17 @@ class _GrammarTab extends StatelessWidget {
   }
 }
 
-class _VocabularyTab extends StatelessWidget {
+class _VocabularyTab extends StatefulWidget {
   final VocabularyService vocabularyService;
 
   const _VocabularyTab({required this.vocabularyService});
+
+  @override
+  State<_VocabularyTab> createState() => _VocabularyTabState();
+}
+
+class _VocabularyTabState extends State<_VocabularyTab> {
+  bool _isLoadingPractice = false;
 
   @override
   Widget build(BuildContext context) {
@@ -116,26 +152,41 @@ class _VocabularyTab extends StatelessWidget {
         const SizedBox(height: 12),
         PrimaryActionCard(
           text: "Start Vocabulary Practice",
-          onTap: () async {
-            final vocab = context.read<VocabularyService>();
-            final practice = PracticeService(vocab);
+          onTap: _isLoadingPractice
+              ? null
+              : () async {
+                  setState(() {
+                    _isLoadingPractice = true;
+                  });
 
-            final exercises = await practice.startRandomSession();
+                  try {
+                    final vocab = context.read<VocabularyService>();
+                    final practice = PracticeService(vocab);
 
-            if (!context.mounted || exercises.isEmpty) return;
+                    final exercises = await practice.startRandomSession();
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PracticeSessionPage(exercises: exercises),
-              ),
-            );
-          },
+                    if (!mounted || exercises.isEmpty) return;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PracticeSessionPage(exercises: exercises),
+                      ),
+                    );
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        _isLoadingPractice = false;
+                      });
+                    }
+                  }
+                },
+          isLoading: _isLoadingPractice,
         ),
         const SizedBox(height: 12),
         Expanded(
           child: StreamBuilder<List<VocabularyItem>>(
-            stream: vocabularyService.watchVocabulary(),
+            stream: widget.vocabularyService.watchVocabulary(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

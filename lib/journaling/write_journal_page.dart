@@ -22,6 +22,7 @@ class _WriteJournalPageState extends State<WriteJournalPage> {
   final TextEditingController _contentController = TextEditingController();
   late TextEditingController _titleController;
   late VocabularyService vocabularyService;
+  bool _isLoadingFeedback = false;
 
   @override
   void initState() {
@@ -86,40 +87,65 @@ class _WriteJournalPageState extends State<WriteJournalPage> {
             ),
             const SizedBox(width: 8),
             OutlinedButton(
-              onPressed: () async {
-                print('Feedback button clicked');
-
-                final feedback = await vocabularyService.getFeedback(
-                    journalText: _contentController.text.trim());
-
-                /// PRINT FOR DEBUGGING
-                print("Corrected Content: ${feedback.correctedContent}");
-
-                print("Corrections:");
-                for (var c in feedback.corrections) {
-                  print(
-                      "- [${c.type}] '${c.wrong}' → '${c.right}' | Concept: ${c.concept}");
+              onPressed: _isLoadingFeedback ? null : () async {
+                if (_contentController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please write something first')),
+                  );
+                  return;
                 }
 
-                print("Learned Concepts:");
-                for (var concept in feedback.conceptsLearned) {
-                  print("- $concept");
-                }
+                setState(() {
+                  _isLoadingFeedback = true;
+                });
 
-                final feedbackData = FeedbackData(
-                    title: _titleController.text.trim(),
-                    originalContent: _contentController.text.trim(),
-                    correctedContent: feedback.correctedContent,
-                    corrections: feedback.corrections,
-                    conceptsLearned: feedback.conceptsLearned);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => FeedbackPage(
-                              feedback: feedbackData,
-                            )));
+                try {
+                  final feedback = await vocabularyService.getFeedback(
+                      journalText: _contentController.text.trim());
+
+                  /// PRINT FOR DEBUGGING
+                  print("Corrected Content: ${feedback.correctedContent}");
+
+                  print("Corrections:");
+                  for (var c in feedback.corrections) {
+                    print(
+                        "- [${c.type}] '${c.wrong}' → '${c.right}' | Concept: ${c.concept}");
+                  }
+
+                  print("Learned Concepts:");
+                  for (var concept in feedback.conceptsLearned) {
+                    print("- $concept");
+                  }
+
+                  if (!mounted) return;
+
+                  final feedbackData = FeedbackData(
+                      title: _titleController.text.trim(),
+                      originalContent: _contentController.text.trim(),
+                      correctedContent: feedback.correctedContent,
+                      corrections: feedback.corrections,
+                      conceptsLearned: feedback.conceptsLearned);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => FeedbackPage(
+                                feedback: feedbackData,
+                              )));
+                } finally {
+                  if (mounted) {
+                    setState(() {
+                      _isLoadingFeedback = false;
+                    });
+                  }
+                }
               },
-              child: const Text('Feedback'),
+              child: _isLoadingFeedback
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Feedback'),
             ),
             const SizedBox(width: 8),
           ],

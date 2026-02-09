@@ -26,6 +26,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   int correctCount = 0;
 
   List<BaseExercise> exercises = [];
+  bool _isLoadingExercises = false;
 
   final GlobalKey<WriteAnswerWidgetState> _writeKey =
       GlobalKey<WriteAnswerWidgetState>();
@@ -42,14 +43,29 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
   }
 
   Future<void> _loadExercises(int wordId) async {
-    final vocab = Provider.of<VocabularyService>(context, listen: false);
-    final practice = PracticeService(vocab);
-
-    final list = await practice.getItemExercises(wordId);
-
     setState(() {
-      exercises = list;
+      _isLoadingExercises = true;
     });
+
+    try {
+      final vocab = Provider.of<VocabularyService>(context, listen: false);
+      final practice = PracticeService(vocab);
+
+      final list = await practice.getItemExercises(wordId);
+
+      if (mounted) {
+        setState(() {
+          exercises = list;
+          _isLoadingExercises = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingExercises = false;
+        });
+      }
+    }
   }
 
   Future<void> handleAnswer(String userAnswer) async {
@@ -110,7 +126,7 @@ class _PracticeItemPageState extends State<PracticeItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (exercises.isEmpty) {
+    if (_isLoadingExercises || exercises.isEmpty) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -304,6 +320,7 @@ class WriteGrammarAnswerWidget extends StatefulWidget {
 
 class _WriteGrammarAnswerWidgetState extends State<WriteGrammarAnswerWidget> {
   final TextEditingController _controller = TextEditingController();
+  bool _isChecking = false;
 
   @override
   Widget build(BuildContext context) {
@@ -319,11 +336,33 @@ class _WriteGrammarAnswerWidgetState extends State<WriteGrammarAnswerWidget> {
             border: OutlineInputBorder(),
             hintText: 'Write your sentence',
           ),
+          enabled: !_isChecking,
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: () => widget.onAnswer(_controller.text),
-          child: const Text('Check'),
+          onPressed: _isChecking
+              ? null
+              : () async {
+                  setState(() {
+                    _isChecking = true;
+                  });
+                  try {
+                    await widget.onAnswer(_controller.text);
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        _isChecking = false;
+                      });
+                    }
+                  }
+                },
+          child: _isChecking
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Check'),
         ),
       ],
     );
