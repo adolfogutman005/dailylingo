@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-// Import your pages
 import 'home_page.dart';
 import 'journaling/journaling_page.dart';
-// import 'notetaking/note_taking_page.dart';
 import 'vocabulary/pages/vocabulary_page.dart';
-import 'reader/pages/reader_page.dart';
-import 'reader/widgets/reader_app_bar.dart';
 import 'journaling/write_journal_page.dart';
-// import 'journaling/write_note_page.dart';
 import 'services/vocabulary_service.dart';
 import 'package:provider/provider.dart';
 
@@ -19,30 +14,19 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 2; // Default to Home
-  String selectedFilter = "Reading";
+  int _currentIndex = 2;
 
-  // Pages
   final List<Widget> _pages = [
-    const ReaderPage(),
+    const _ComingSoonPage(title: 'Reading'),
     const JournalingPage(),
     const HomePage(),
-    // const NoteTakingPage(),
-
+    const _ComingSoonPage(title: 'Note Taking'),
     const VocabularyPage(),
   ];
 
   PreferredSizeWidget? buildAppBar(int index) {
     final appBars = {
-      0: ReaderAppBar(
-        filters: const ["Reading", "Finished", "Favorites"],
-        selected: selectedFilter,
-        onFilterSelected: (filter) {
-          setState(() {
-            selectedFilter = filter;
-          });
-        },
-      ),
+      0: AppBar(title: const Text('Reading')),
       1: AppBar(
         title: const Text('Journal'),
         actions: [
@@ -62,14 +46,13 @@ class _MainScreenState extends State<MainScreen> {
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
         ],
       ),
-      3: AppBar(
+      3: AppBar(title: const Text('Note Taking')),
+      4: AppBar(
         title: const Text("Vocabulary"),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {
-              // TODO: open search
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -97,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
     );
 
     _fabs[2] = generalFAB(context: context);
-    _fabs[3] = generalFAB(context: context);
+    _fabs[4] = generalFAB(context: context);
   }
 
   @override
@@ -174,4 +157,20 @@ FloatingActionButton generalFAB({
     },
     child: const Icon(Icons.add),
   );
+}
+
+class _ComingSoonPage extends StatelessWidget {
+  final String title;
+
+  const _ComingSoonPage({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'Coming Soon',
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+    );
+  }
 }
