@@ -105,6 +105,10 @@ class VocabularyService {
     );
   }
 
+  Future<List<String>> getAllGrammarConcepts() async {
+    return await _repo.getAllGrammarConcepts();
+  }
+
   Future<int> saveJournal(FeedbackData feedback,
       {bool saveFeedback = true}) async {
     final journalId = await _repo.saveJournal(

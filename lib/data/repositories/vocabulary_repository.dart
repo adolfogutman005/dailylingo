@@ -218,6 +218,11 @@ class VocabularyRepository {
     );
   }
 
+  Future<List<String>> getAllGrammarConcepts() async {
+    final rows = await db.select(db.grammarConcepts).get();
+    return rows.map((row) => row.name).toList();
+  }
+
   Future<JournalFeedback> getFeedback({
     required String journalText,
   }) async {

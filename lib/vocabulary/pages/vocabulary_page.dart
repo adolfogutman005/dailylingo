@@ -8,14 +8,11 @@ import '../../exercises/practice_service.dart';
 import '../../exercises/exercises_session_page.dart';
 
 class VocabularyPage extends StatelessWidget {
-  const VocabularyPage({
-    super.key,
-  });
+  const VocabularyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final vocabularyService =
-        Provider.of<VocabularyService>(context); // listen:true
+    final vocabularyService = Provider.of<VocabularyService>(context);
 
     return DefaultTabController(
       length: 2,
@@ -24,19 +21,65 @@ class VocabularyPage extends StatelessWidget {
           const TabBar(
             tabs: [
               Tab(text: "Vocabulary"),
-              Tab(text: "Improve"),
+              Tab(text: "Grammar"), // renamed
             ],
           ),
           Expanded(
             child: TabBarView(
               children: [
                 _VocabularyTab(vocabularyService: vocabularyService),
-                const Center(child: Text("Coming Soon")),
+                _GrammarTab(vocabularyService: vocabularyService), // new tab
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _GrammarTab extends StatelessWidget {
+  final VocabularyService vocabularyService;
+
+  const _GrammarTab({required this.vocabularyService});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<String>>(
+      future: vocabularyService.getAllGrammarConcepts(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final concepts = snapshot.data ?? [];
+
+        if (concepts.isEmpty) {
+          return const Center(
+            child: Text("No grammar concepts learned yet"),
+          );
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.all(12),
+          itemCount: concepts.length,
+          separatorBuilder: (_, __) => const Divider(),
+          itemBuilder: (context, index) {
+            final concept = concepts[index];
+            return ListTile(
+              leading: const Icon(
+                Icons.check_circle_outline,
+                color: Colors.green,
+              ),
+              title: Text(concept),
+            );
+          },
+        );
+      },
     );
   }
 }
