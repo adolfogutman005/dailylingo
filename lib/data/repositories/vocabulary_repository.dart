@@ -251,6 +251,26 @@ class VocabularyRepository {
         conceptsLearned: concepts);
   }
 
+  Future<int> saveJournal({
+    required String title,
+    required String contentOriginal,
+    String? contentCorrected, // nullable
+  }) async {
+    // Create a companion object for insertion
+    final journalCompanion = JournalsCompanion(
+      title: Value(title),
+      contentOriginal: Value(contentOriginal),
+      contentCorrected: contentCorrected != null
+          ? Value(contentCorrected)
+          : const Value.absent(), // absent if null
+      createdAt: Value(DateTime.now()),
+    );
+
+    // Insert into the database and return the generated id
+    final journalId = await db.into(db.journals).insert(journalCompanion);
+    return journalId;
+  }
+
   Future<void> debugPrintAllWords() async {
     print("===== DEBUG: All Word Entries =====");
     final words = await db.select(db.wordEntries).get();

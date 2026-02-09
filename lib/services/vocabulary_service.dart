@@ -104,6 +104,24 @@ class VocabularyService {
     );
   }
 
+  Future<int> createJournal({
+    required String title,
+    required String contentOriginal,
+    String? contentCorrected,
+  }) async {
+    // You could add validation or preprocessing here
+    if (title.isEmpty) throw Exception('Title cannot be empty');
+    if (contentOriginal.isEmpty) throw Exception('Content cannot be empty');
+
+    final journalId = await _repo.saveJournal(
+      title: title,
+      contentOriginal: contentOriginal,
+      contentCorrected: contentCorrected,
+    );
+
+    return journalId;
+  }
+
   Future<void> debugPrintAllWords() async {
     print("[VocabularyService] debugPrintAllWords called");
     await _repo.debugPrintAllWords();
