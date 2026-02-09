@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -125,37 +126,14 @@ class _JournalingPageState extends State<JournalingPage> {
   }
 
   Widget _challengeRow() {
-    final challenges = [
-      {
-        'title': 'My Favorite Song',
-        'icon': Icons.music_note,
-        'placeholder': 'What is your favorite song and why?',
-      },
-      {
-        'title': 'My Favorite Movie',
-        'icon': Icons.movie,
-        'placeholder': 'What is your favorite movie and what makes it special?',
-      },
-      {
-        'title': 'Happiest Memory',
-        'icon': Icons.emoji_emotions,
-        'placeholder': 'What is one of the happiest memories of your life?',
-      },
-      {
-        'title': 'Random Thought',
-        'icon': Icons.lightbulb,
-        'placeholder': 'Write about any thought currently on your mind.',
-      },
-    ];
-
     return SizedBox(
       height: 140,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: challenges.length,
+        itemCount: _challengeJournals.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final item = challenges[index];
+          final item = _challengeJournals[index];
           return _challengeCard(
             title: item['title'] as String,
             icon: item['icon'] as IconData,
@@ -208,10 +186,28 @@ class _JournalingPageState extends State<JournalingPage> {
     );
   }
 
+  static const List<Map<String, dynamic>> _challengeJournals = [
+    {'title': 'My Favorite Song', 'icon': Icons.music_note, 'placeholder': 'What is your favorite song and why?'},
+    {'title': 'My Favorite Movie', 'icon': Icons.movie, 'placeholder': 'What is your favorite movie and what makes it special?'},
+    {'title': 'Happiest Memory', 'icon': Icons.emoji_emotions, 'placeholder': 'What is one of the happiest memories of your life?'},
+    {'title': 'Random Thought', 'icon': Icons.lightbulb, 'placeholder': 'Write about any thought currently on your mind.'},
+  ];
+
   Widget _randomJournalButton() {
     return Center(
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          final challenge = _challengeJournals[Random().nextInt(_challengeJournals.length)];
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WriteJournalPage(
+                initialTitle: challenge['title'] as String,
+                placeholder: challenge['placeholder'] as String,
+              ),
+            ),
+          );
+        },
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
