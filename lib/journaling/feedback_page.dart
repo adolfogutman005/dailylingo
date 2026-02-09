@@ -21,6 +21,9 @@ class _FeedbackPageState extends State<FeedbackPage>
   late TabController _tabController;
   late TextEditingController _titleController;
 
+  late List<Correction> editableCorrections;
+  late List<String> learnedConcepts;
+
   /// Active filters
   Set<CorrectionType> activeFilters = {
     CorrectionType.grammar,
@@ -32,6 +35,9 @@ class _FeedbackPageState extends State<FeedbackPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _titleController = TextEditingController(text: widget.feedback.title);
+
+    editableCorrections = List.from(widget.feedback.corrections);
+    learnedConcepts = List.from(widget.feedback.conceptsLearned);
   }
 
   @override
@@ -69,9 +75,7 @@ class _FeedbackPageState extends State<FeedbackPage>
   }
 
   Widget buildFeedbackTile() {
-    final corrections = widget.feedback.corrections;
-
-    if (corrections.isEmpty) return const SizedBox.shrink();
+    if (editableCorrections.isEmpty) return const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.only(top: 16),
@@ -92,10 +96,10 @@ class _FeedbackPageState extends State<FeedbackPage>
           ),
         ),
         subtitle: Text(
-          "${corrections.length} correction${corrections.length == 1 ? '' : 's'}",
+          "${editableCorrections.length} correction${editableCorrections.length == 1 ? '' : 's'}",
           style: const TextStyle(fontSize: 13),
         ),
-        children: corrections.map((c) {
+        children: editableCorrections.map((c) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(
@@ -113,9 +117,17 @@ class _FeedbackPageState extends State<FeedbackPage>
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    c.wrong, // For now we just show the wrong part
+                    c.wrong,
                     style: const TextStyle(fontSize: 15, height: 1.4),
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.grey),
+                  onPressed: () {
+                    setState(() {
+                      editableCorrections.remove(c);
+                    });
+                  },
                 ),
               ],
             ),
@@ -126,10 +138,6 @@ class _FeedbackPageState extends State<FeedbackPage>
   }
 
   Widget buildLearnedConcepts() {
-    final concepts = widget.feedback.conceptsLearned;
-
-    if (concepts.isEmpty) return const SizedBox.shrink();
-
     return Container(
       margin: const EdgeInsets.only(top: 24),
       decoration: BoxDecoration(
@@ -140,6 +148,7 @@ class _FeedbackPageState extends State<FeedbackPage>
       child: ExpansionTile(
         tilePadding: const EdgeInsets.symmetric(horizontal: 16),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        leading: const Icon(Icons.check_circle_outline, color: Colors.green),
         title: const Text(
           "What You Learned",
           style: TextStyle(
@@ -148,27 +157,49 @@ class _FeedbackPageState extends State<FeedbackPage>
           ),
         ),
         subtitle: Text(
-          "${concepts.length} concept${concepts.length == 1 ? '' : 's'}",
+          "${learnedConcepts.length} concept${learnedConcepts.length == 1 ? '' : 's'}",
           style: const TextStyle(fontSize: 13),
         ),
-        children: concepts.map((c) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.check_circle_outline, size: 18, color: Colors.green),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    c,
-                    style: TextStyle(fontSize: 15, height: 1.4),
+        children: [
+          ...learnedConcepts.asMap().entries.map((entry) {
+            final index = entry.key;
+            final concept = entry.value;
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: concept,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (v) => learnedConcepts[index] = v,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.grey),
+                    onPressed: () {
+                      setState(() {
+                        learnedConcepts.removeAt(index);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            );
+          }),
+          TextButton.icon(
+            onPressed: () {
+              setState(() {
+                learnedConcepts.add(""); // add empty concept
+              });
+            },
+            icon: const Icon(Icons.add),
+            label: const Text("Add Concept"),
+          ),
+        ],
       ),
     );
   }
@@ -182,7 +213,7 @@ class _FeedbackPageState extends State<FeedbackPage>
       color: Colors.black87,
     );
 
-    final active = widget.feedback.corrections
+    final active = editableCorrections
         .where((c) => activeFilters.contains(c.type))
         .toList();
 
