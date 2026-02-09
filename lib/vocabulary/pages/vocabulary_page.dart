@@ -6,6 +6,7 @@ import '../../services/vocabulary_service.dart';
 import 'package:provider/provider.dart';
 import '../../exercises/practice_service.dart';
 import '../../exercises/exercises_session_page.dart';
+import '../../exercises/exercises_page.dart';
 
 class VocabularyPage extends StatelessWidget {
   const VocabularyPage({super.key});
@@ -76,6 +77,25 @@ class _GrammarTab extends StatelessWidget {
                 color: Colors.green,
               ),
               title: Text(concept),
+              trailing: ElevatedButton(
+                onPressed: () async {
+                  final practiceService = PracticeService(vocabularyService);
+
+                  final exercises =
+                      await practiceService.getGrammarExercises(concept);
+
+                  if (!context.mounted || exercises.isEmpty) return;
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          PracticeItemPage(exercisesOverride: exercises),
+                    ),
+                  );
+                },
+                child: const Text("Practice"),
+              ),
             );
           },
         );

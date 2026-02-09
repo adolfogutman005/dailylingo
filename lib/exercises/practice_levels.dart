@@ -1,5 +1,5 @@
 import '../../services/vocabulary_service.dart';
-import 'exercises_templates.dart';
+import 'vocabulary_exercises_templates.dart';
 import 'exercise.dart';
 
 typedef LevelExerciseBuilder = Future<List<Exercise>> Function(

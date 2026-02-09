@@ -1,12 +1,20 @@
 import '../../services/vocabulary_service.dart';
 import 'exercise.dart';
 import 'practice_levels.dart';
-import 'exercises_templates.dart';
+import 'vocabulary_exercises_templates.dart';
+import 'grammar_exercises_templates.dart';
 
 class PracticeService {
   final VocabularyService vocab;
 
   PracticeService(this.vocab);
+
+  Future<List<Exercise>> getGrammarExercises(String concept) async {
+    return [
+      await GrammarExerciseTemplates.exampleSentence(vocab, concept),
+      await GrammarExerciseTemplates.multipleChoice(vocab, concept),
+    ];
+  }
 
   Future<List<Exercise>> getItemExercises(int wordId) async {
     final learning = await vocab.getLearningData(wordId);
