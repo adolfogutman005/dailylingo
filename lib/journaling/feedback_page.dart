@@ -21,7 +21,7 @@ class _FeedbackPageState extends State<FeedbackPage>
   late TabController _tabController;
   late TextEditingController _titleController;
 
-  late List<Correction> editableCorrections;
+  late List<CorrectionClass> editableCorrections;
   late List<String> learnedConcepts;
 
   late List<TextEditingController> conceptControllers;
@@ -62,7 +62,7 @@ class _FeedbackPageState extends State<FeedbackPage>
   }
 
   Color _highlightColor({
-    required Correction correction,
+    required CorrectionClass correction,
     required int minLen,
     required int maxLen,
   }) {
@@ -260,7 +260,7 @@ class _FeedbackPageState extends State<FeedbackPage>
     } else {
       final spans = <TextSpan>[];
 
-      int len(Correction c) => c.end - c.start;
+      int len(CorrectionClass c) => c.end - c.start;
 
       // Separate by type
       final grammar =
@@ -268,10 +268,10 @@ class _FeedbackPageState extends State<FeedbackPage>
       final suggestions =
           active.where((c) => c.type == CorrectionType.suggestion).toList();
 
-      int minLen(List<Correction> list) =>
+      int minLen(List<CorrectionClass> list) =>
           list.isEmpty ? 0 : list.map(len).reduce((a, b) => a < b ? a : b);
 
-      int maxLen(List<Correction> list) =>
+      int maxLen(List<CorrectionClass> list) =>
           list.isEmpty ? 1 : list.map(len).reduce((a, b) => a > b ? a : b);
 
       final gMin = minLen(grammar);
@@ -348,7 +348,7 @@ class _FeedbackPageState extends State<FeedbackPage>
   }
 
   // Bottom Modal Sheet
-  void showCorrectionSheet(Correction c) {
+  void showCorrectionSheet(CorrectionClass c) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

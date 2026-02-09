@@ -1760,6 +1760,1168 @@ class WordLearningDataCompanion extends UpdateCompanion<WordLearningDataData> {
   }
 }
 
+class $JournalsTable extends Journals with TableInfo<$JournalsTable, Journal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JournalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _contentOriginalMeta =
+      const VerificationMeta('contentOriginal');
+  @override
+  late final GeneratedColumn<String> contentOriginal = GeneratedColumn<String>(
+      'content_original', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _contentCorrectedMeta =
+      const VerificationMeta('contentCorrected');
+  @override
+  late final GeneratedColumn<String> contentCorrected = GeneratedColumn<String>(
+      'content_corrected', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, title, contentOriginal, contentCorrected, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'journals';
+  @override
+  VerificationContext validateIntegrity(Insertable<Journal> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('content_original')) {
+      context.handle(
+          _contentOriginalMeta,
+          contentOriginal.isAcceptableOrUnknown(
+              data['content_original']!, _contentOriginalMeta));
+    } else if (isInserting) {
+      context.missing(_contentOriginalMeta);
+    }
+    if (data.containsKey('content_corrected')) {
+      context.handle(
+          _contentCorrectedMeta,
+          contentCorrected.isAcceptableOrUnknown(
+              data['content_corrected']!, _contentCorrectedMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Journal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Journal(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      contentOriginal: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}content_original'])!,
+      contentCorrected: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}content_corrected']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $JournalsTable createAlias(String alias) {
+    return $JournalsTable(attachedDatabase, alias);
+  }
+}
+
+class Journal extends DataClass implements Insertable<Journal> {
+  final int id;
+  final String title;
+  final String contentOriginal;
+  final String? contentCorrected;
+  final DateTime createdAt;
+  const Journal(
+      {required this.id,
+      required this.title,
+      required this.contentOriginal,
+      this.contentCorrected,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['title'] = Variable<String>(title);
+    map['content_original'] = Variable<String>(contentOriginal);
+    if (!nullToAbsent || contentCorrected != null) {
+      map['content_corrected'] = Variable<String>(contentCorrected);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  JournalsCompanion toCompanion(bool nullToAbsent) {
+    return JournalsCompanion(
+      id: Value(id),
+      title: Value(title),
+      contentOriginal: Value(contentOriginal),
+      contentCorrected: contentCorrected == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contentCorrected),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Journal.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Journal(
+      id: serializer.fromJson<int>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      contentOriginal: serializer.fromJson<String>(json['contentOriginal']),
+      contentCorrected: serializer.fromJson<String?>(json['contentCorrected']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'title': serializer.toJson<String>(title),
+      'contentOriginal': serializer.toJson<String>(contentOriginal),
+      'contentCorrected': serializer.toJson<String?>(contentCorrected),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Journal copyWith(
+          {int? id,
+          String? title,
+          String? contentOriginal,
+          Value<String?> contentCorrected = const Value.absent(),
+          DateTime? createdAt}) =>
+      Journal(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        contentOriginal: contentOriginal ?? this.contentOriginal,
+        contentCorrected: contentCorrected.present
+            ? contentCorrected.value
+            : this.contentCorrected,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  Journal copyWithCompanion(JournalsCompanion data) {
+    return Journal(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      contentOriginal: data.contentOriginal.present
+          ? data.contentOriginal.value
+          : this.contentOriginal,
+      contentCorrected: data.contentCorrected.present
+          ? data.contentCorrected.value
+          : this.contentCorrected,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Journal(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('contentOriginal: $contentOriginal, ')
+          ..write('contentCorrected: $contentCorrected, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, title, contentOriginal, contentCorrected, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Journal &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.contentOriginal == this.contentOriginal &&
+          other.contentCorrected == this.contentCorrected &&
+          other.createdAt == this.createdAt);
+}
+
+class JournalsCompanion extends UpdateCompanion<Journal> {
+  final Value<int> id;
+  final Value<String> title;
+  final Value<String> contentOriginal;
+  final Value<String?> contentCorrected;
+  final Value<DateTime> createdAt;
+  const JournalsCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.contentOriginal = const Value.absent(),
+    this.contentCorrected = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  JournalsCompanion.insert({
+    this.id = const Value.absent(),
+    required String title,
+    required String contentOriginal,
+    this.contentCorrected = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  })  : title = Value(title),
+        contentOriginal = Value(contentOriginal);
+  static Insertable<Journal> custom({
+    Expression<int>? id,
+    Expression<String>? title,
+    Expression<String>? contentOriginal,
+    Expression<String>? contentCorrected,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (contentOriginal != null) 'content_original': contentOriginal,
+      if (contentCorrected != null) 'content_corrected': contentCorrected,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  JournalsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? title,
+      Value<String>? contentOriginal,
+      Value<String?>? contentCorrected,
+      Value<DateTime>? createdAt}) {
+    return JournalsCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      contentOriginal: contentOriginal ?? this.contentOriginal,
+      contentCorrected: contentCorrected ?? this.contentCorrected,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (contentOriginal.present) {
+      map['content_original'] = Variable<String>(contentOriginal.value);
+    }
+    if (contentCorrected.present) {
+      map['content_corrected'] = Variable<String>(contentCorrected.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JournalsCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('contentOriginal: $contentOriginal, ')
+          ..write('contentCorrected: $contentCorrected, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CorrectionsTable extends Corrections
+    with TableInfo<$CorrectionsTable, Correction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CorrectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _journalIdMeta =
+      const VerificationMeta('journalId');
+  @override
+  late final GeneratedColumn<int> journalId = GeneratedColumn<int>(
+      'journal_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES journals(id) ON DELETE CASCADE');
+  static const VerificationMeta _startMeta = const VerificationMeta('start');
+  @override
+  late final GeneratedColumn<int> start = GeneratedColumn<int>(
+      'start', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _endMeta = const VerificationMeta('end');
+  @override
+  late final GeneratedColumn<int> end = GeneratedColumn<int>(
+      'end', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _wrongMeta = const VerificationMeta('wrong');
+  @override
+  late final GeneratedColumn<String> wrong = GeneratedColumn<String>(
+      'wrong', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _rightMeta = const VerificationMeta('right');
+  @override
+  late final GeneratedColumn<String> right = GeneratedColumn<String>(
+      'right', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _exampleMeta =
+      const VerificationMeta('example');
+  @override
+  late final GeneratedColumn<String> example = GeneratedColumn<String>(
+      'example', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _explanationMeta =
+      const VerificationMeta('explanation');
+  @override
+  late final GeneratedColumn<String> explanation = GeneratedColumn<String>(
+      'explanation', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, journalId, start, end, wrong, right, example, explanation, type];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'corrections';
+  @override
+  VerificationContext validateIntegrity(Insertable<Correction> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('journal_id')) {
+      context.handle(_journalIdMeta,
+          journalId.isAcceptableOrUnknown(data['journal_id']!, _journalIdMeta));
+    } else if (isInserting) {
+      context.missing(_journalIdMeta);
+    }
+    if (data.containsKey('start')) {
+      context.handle(
+          _startMeta, start.isAcceptableOrUnknown(data['start']!, _startMeta));
+    } else if (isInserting) {
+      context.missing(_startMeta);
+    }
+    if (data.containsKey('end')) {
+      context.handle(
+          _endMeta, end.isAcceptableOrUnknown(data['end']!, _endMeta));
+    } else if (isInserting) {
+      context.missing(_endMeta);
+    }
+    if (data.containsKey('wrong')) {
+      context.handle(
+          _wrongMeta, wrong.isAcceptableOrUnknown(data['wrong']!, _wrongMeta));
+    } else if (isInserting) {
+      context.missing(_wrongMeta);
+    }
+    if (data.containsKey('right')) {
+      context.handle(
+          _rightMeta, right.isAcceptableOrUnknown(data['right']!, _rightMeta));
+    } else if (isInserting) {
+      context.missing(_rightMeta);
+    }
+    if (data.containsKey('example')) {
+      context.handle(_exampleMeta,
+          example.isAcceptableOrUnknown(data['example']!, _exampleMeta));
+    } else if (isInserting) {
+      context.missing(_exampleMeta);
+    }
+    if (data.containsKey('explanation')) {
+      context.handle(
+          _explanationMeta,
+          explanation.isAcceptableOrUnknown(
+              data['explanation']!, _explanationMeta));
+    } else if (isInserting) {
+      context.missing(_explanationMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Correction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Correction(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      journalId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}journal_id'])!,
+      start: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}start'])!,
+      end: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}end'])!,
+      wrong: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}wrong'])!,
+      right: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}right'])!,
+      example: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}example'])!,
+      explanation: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}explanation'])!,
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+    );
+  }
+
+  @override
+  $CorrectionsTable createAlias(String alias) {
+    return $CorrectionsTable(attachedDatabase, alias);
+  }
+}
+
+class Correction extends DataClass implements Insertable<Correction> {
+  final int id;
+  final int journalId;
+  final int start;
+  final int end;
+  final String wrong;
+  final String right;
+  final String example;
+  final String explanation;
+  final String type;
+  const Correction(
+      {required this.id,
+      required this.journalId,
+      required this.start,
+      required this.end,
+      required this.wrong,
+      required this.right,
+      required this.example,
+      required this.explanation,
+      required this.type});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['journal_id'] = Variable<int>(journalId);
+    map['start'] = Variable<int>(start);
+    map['end'] = Variable<int>(end);
+    map['wrong'] = Variable<String>(wrong);
+    map['right'] = Variable<String>(right);
+    map['example'] = Variable<String>(example);
+    map['explanation'] = Variable<String>(explanation);
+    map['type'] = Variable<String>(type);
+    return map;
+  }
+
+  CorrectionsCompanion toCompanion(bool nullToAbsent) {
+    return CorrectionsCompanion(
+      id: Value(id),
+      journalId: Value(journalId),
+      start: Value(start),
+      end: Value(end),
+      wrong: Value(wrong),
+      right: Value(right),
+      example: Value(example),
+      explanation: Value(explanation),
+      type: Value(type),
+    );
+  }
+
+  factory Correction.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Correction(
+      id: serializer.fromJson<int>(json['id']),
+      journalId: serializer.fromJson<int>(json['journalId']),
+      start: serializer.fromJson<int>(json['start']),
+      end: serializer.fromJson<int>(json['end']),
+      wrong: serializer.fromJson<String>(json['wrong']),
+      right: serializer.fromJson<String>(json['right']),
+      example: serializer.fromJson<String>(json['example']),
+      explanation: serializer.fromJson<String>(json['explanation']),
+      type: serializer.fromJson<String>(json['type']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'journalId': serializer.toJson<int>(journalId),
+      'start': serializer.toJson<int>(start),
+      'end': serializer.toJson<int>(end),
+      'wrong': serializer.toJson<String>(wrong),
+      'right': serializer.toJson<String>(right),
+      'example': serializer.toJson<String>(example),
+      'explanation': serializer.toJson<String>(explanation),
+      'type': serializer.toJson<String>(type),
+    };
+  }
+
+  Correction copyWith(
+          {int? id,
+          int? journalId,
+          int? start,
+          int? end,
+          String? wrong,
+          String? right,
+          String? example,
+          String? explanation,
+          String? type}) =>
+      Correction(
+        id: id ?? this.id,
+        journalId: journalId ?? this.journalId,
+        start: start ?? this.start,
+        end: end ?? this.end,
+        wrong: wrong ?? this.wrong,
+        right: right ?? this.right,
+        example: example ?? this.example,
+        explanation: explanation ?? this.explanation,
+        type: type ?? this.type,
+      );
+  Correction copyWithCompanion(CorrectionsCompanion data) {
+    return Correction(
+      id: data.id.present ? data.id.value : this.id,
+      journalId: data.journalId.present ? data.journalId.value : this.journalId,
+      start: data.start.present ? data.start.value : this.start,
+      end: data.end.present ? data.end.value : this.end,
+      wrong: data.wrong.present ? data.wrong.value : this.wrong,
+      right: data.right.present ? data.right.value : this.right,
+      example: data.example.present ? data.example.value : this.example,
+      explanation:
+          data.explanation.present ? data.explanation.value : this.explanation,
+      type: data.type.present ? data.type.value : this.type,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Correction(')
+          ..write('id: $id, ')
+          ..write('journalId: $journalId, ')
+          ..write('start: $start, ')
+          ..write('end: $end, ')
+          ..write('wrong: $wrong, ')
+          ..write('right: $right, ')
+          ..write('example: $example, ')
+          ..write('explanation: $explanation, ')
+          ..write('type: $type')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, journalId, start, end, wrong, right, example, explanation, type);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Correction &&
+          other.id == this.id &&
+          other.journalId == this.journalId &&
+          other.start == this.start &&
+          other.end == this.end &&
+          other.wrong == this.wrong &&
+          other.right == this.right &&
+          other.example == this.example &&
+          other.explanation == this.explanation &&
+          other.type == this.type);
+}
+
+class CorrectionsCompanion extends UpdateCompanion<Correction> {
+  final Value<int> id;
+  final Value<int> journalId;
+  final Value<int> start;
+  final Value<int> end;
+  final Value<String> wrong;
+  final Value<String> right;
+  final Value<String> example;
+  final Value<String> explanation;
+  final Value<String> type;
+  const CorrectionsCompanion({
+    this.id = const Value.absent(),
+    this.journalId = const Value.absent(),
+    this.start = const Value.absent(),
+    this.end = const Value.absent(),
+    this.wrong = const Value.absent(),
+    this.right = const Value.absent(),
+    this.example = const Value.absent(),
+    this.explanation = const Value.absent(),
+    this.type = const Value.absent(),
+  });
+  CorrectionsCompanion.insert({
+    this.id = const Value.absent(),
+    required int journalId,
+    required int start,
+    required int end,
+    required String wrong,
+    required String right,
+    required String example,
+    required String explanation,
+    required String type,
+  })  : journalId = Value(journalId),
+        start = Value(start),
+        end = Value(end),
+        wrong = Value(wrong),
+        right = Value(right),
+        example = Value(example),
+        explanation = Value(explanation),
+        type = Value(type);
+  static Insertable<Correction> custom({
+    Expression<int>? id,
+    Expression<int>? journalId,
+    Expression<int>? start,
+    Expression<int>? end,
+    Expression<String>? wrong,
+    Expression<String>? right,
+    Expression<String>? example,
+    Expression<String>? explanation,
+    Expression<String>? type,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (journalId != null) 'journal_id': journalId,
+      if (start != null) 'start': start,
+      if (end != null) 'end': end,
+      if (wrong != null) 'wrong': wrong,
+      if (right != null) 'right': right,
+      if (example != null) 'example': example,
+      if (explanation != null) 'explanation': explanation,
+      if (type != null) 'type': type,
+    });
+  }
+
+  CorrectionsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? journalId,
+      Value<int>? start,
+      Value<int>? end,
+      Value<String>? wrong,
+      Value<String>? right,
+      Value<String>? example,
+      Value<String>? explanation,
+      Value<String>? type}) {
+    return CorrectionsCompanion(
+      id: id ?? this.id,
+      journalId: journalId ?? this.journalId,
+      start: start ?? this.start,
+      end: end ?? this.end,
+      wrong: wrong ?? this.wrong,
+      right: right ?? this.right,
+      example: example ?? this.example,
+      explanation: explanation ?? this.explanation,
+      type: type ?? this.type,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (journalId.present) {
+      map['journal_id'] = Variable<int>(journalId.value);
+    }
+    if (start.present) {
+      map['start'] = Variable<int>(start.value);
+    }
+    if (end.present) {
+      map['end'] = Variable<int>(end.value);
+    }
+    if (wrong.present) {
+      map['wrong'] = Variable<String>(wrong.value);
+    }
+    if (right.present) {
+      map['right'] = Variable<String>(right.value);
+    }
+    if (example.present) {
+      map['example'] = Variable<String>(example.value);
+    }
+    if (explanation.present) {
+      map['explanation'] = Variable<String>(explanation.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CorrectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('journalId: $journalId, ')
+          ..write('start: $start, ')
+          ..write('end: $end, ')
+          ..write('wrong: $wrong, ')
+          ..write('right: $right, ')
+          ..write('example: $example, ')
+          ..write('explanation: $explanation, ')
+          ..write('type: $type')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GrammarConceptsTable extends GrammarConcepts
+    with TableInfo<$GrammarConceptsTable, GrammarConcept> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GrammarConceptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'grammar_concepts';
+  @override
+  VerificationContext validateIntegrity(Insertable<GrammarConcept> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GrammarConcept map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GrammarConcept(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
+  }
+
+  @override
+  $GrammarConceptsTable createAlias(String alias) {
+    return $GrammarConceptsTable(attachedDatabase, alias);
+  }
+}
+
+class GrammarConcept extends DataClass implements Insertable<GrammarConcept> {
+  final int id;
+  final String name;
+  const GrammarConcept({required this.id, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  GrammarConceptsCompanion toCompanion(bool nullToAbsent) {
+    return GrammarConceptsCompanion(
+      id: Value(id),
+      name: Value(name),
+    );
+  }
+
+  factory GrammarConcept.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GrammarConcept(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  GrammarConcept copyWith({int? id, String? name}) => GrammarConcept(
+        id: id ?? this.id,
+        name: name ?? this.name,
+      );
+  GrammarConcept copyWithCompanion(GrammarConceptsCompanion data) {
+    return GrammarConcept(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GrammarConcept(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GrammarConcept &&
+          other.id == this.id &&
+          other.name == this.name);
+}
+
+class GrammarConceptsCompanion extends UpdateCompanion<GrammarConcept> {
+  final Value<int> id;
+  final Value<String> name;
+  const GrammarConceptsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  GrammarConceptsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+  }) : name = Value(name);
+  static Insertable<GrammarConcept> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+    });
+  }
+
+  GrammarConceptsCompanion copyWith({Value<int>? id, Value<String>? name}) {
+    return GrammarConceptsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GrammarConceptsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JournalConceptsTable extends JournalConcepts
+    with TableInfo<$JournalConceptsTable, JournalConcept> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JournalConceptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _journalIdMeta =
+      const VerificationMeta('journalId');
+  @override
+  late final GeneratedColumn<int> journalId = GeneratedColumn<int>(
+      'journal_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES journals(id) ON DELETE CASCADE');
+  static const VerificationMeta _grammarConceptIdMeta =
+      const VerificationMeta('grammarConceptId');
+  @override
+  late final GeneratedColumn<int> grammarConceptId = GeneratedColumn<int>(
+      'grammar_concept_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES grammar_concepts(id) ON DELETE CASCADE');
+  @override
+  List<GeneratedColumn> get $columns => [id, journalId, grammarConceptId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'journal_concepts';
+  @override
+  VerificationContext validateIntegrity(Insertable<JournalConcept> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('journal_id')) {
+      context.handle(_journalIdMeta,
+          journalId.isAcceptableOrUnknown(data['journal_id']!, _journalIdMeta));
+    } else if (isInserting) {
+      context.missing(_journalIdMeta);
+    }
+    if (data.containsKey('grammar_concept_id')) {
+      context.handle(
+          _grammarConceptIdMeta,
+          grammarConceptId.isAcceptableOrUnknown(
+              data['grammar_concept_id']!, _grammarConceptIdMeta));
+    } else if (isInserting) {
+      context.missing(_grammarConceptIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  JournalConcept map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return JournalConcept(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      journalId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}journal_id'])!,
+      grammarConceptId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}grammar_concept_id'])!,
+    );
+  }
+
+  @override
+  $JournalConceptsTable createAlias(String alias) {
+    return $JournalConceptsTable(attachedDatabase, alias);
+  }
+}
+
+class JournalConcept extends DataClass implements Insertable<JournalConcept> {
+  final int id;
+  final int journalId;
+  final int grammarConceptId;
+  const JournalConcept(
+      {required this.id,
+      required this.journalId,
+      required this.grammarConceptId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['journal_id'] = Variable<int>(journalId);
+    map['grammar_concept_id'] = Variable<int>(grammarConceptId);
+    return map;
+  }
+
+  JournalConceptsCompanion toCompanion(bool nullToAbsent) {
+    return JournalConceptsCompanion(
+      id: Value(id),
+      journalId: Value(journalId),
+      grammarConceptId: Value(grammarConceptId),
+    );
+  }
+
+  factory JournalConcept.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return JournalConcept(
+      id: serializer.fromJson<int>(json['id']),
+      journalId: serializer.fromJson<int>(json['journalId']),
+      grammarConceptId: serializer.fromJson<int>(json['grammarConceptId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'journalId': serializer.toJson<int>(journalId),
+      'grammarConceptId': serializer.toJson<int>(grammarConceptId),
+    };
+  }
+
+  JournalConcept copyWith({int? id, int? journalId, int? grammarConceptId}) =>
+      JournalConcept(
+        id: id ?? this.id,
+        journalId: journalId ?? this.journalId,
+        grammarConceptId: grammarConceptId ?? this.grammarConceptId,
+      );
+  JournalConcept copyWithCompanion(JournalConceptsCompanion data) {
+    return JournalConcept(
+      id: data.id.present ? data.id.value : this.id,
+      journalId: data.journalId.present ? data.journalId.value : this.journalId,
+      grammarConceptId: data.grammarConceptId.present
+          ? data.grammarConceptId.value
+          : this.grammarConceptId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JournalConcept(')
+          ..write('id: $id, ')
+          ..write('journalId: $journalId, ')
+          ..write('grammarConceptId: $grammarConceptId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, journalId, grammarConceptId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is JournalConcept &&
+          other.id == this.id &&
+          other.journalId == this.journalId &&
+          other.grammarConceptId == this.grammarConceptId);
+}
+
+class JournalConceptsCompanion extends UpdateCompanion<JournalConcept> {
+  final Value<int> id;
+  final Value<int> journalId;
+  final Value<int> grammarConceptId;
+  const JournalConceptsCompanion({
+    this.id = const Value.absent(),
+    this.journalId = const Value.absent(),
+    this.grammarConceptId = const Value.absent(),
+  });
+  JournalConceptsCompanion.insert({
+    this.id = const Value.absent(),
+    required int journalId,
+    required int grammarConceptId,
+  })  : journalId = Value(journalId),
+        grammarConceptId = Value(grammarConceptId);
+  static Insertable<JournalConcept> custom({
+    Expression<int>? id,
+    Expression<int>? journalId,
+    Expression<int>? grammarConceptId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (journalId != null) 'journal_id': journalId,
+      if (grammarConceptId != null) 'grammar_concept_id': grammarConceptId,
+    });
+  }
+
+  JournalConceptsCompanion copyWith(
+      {Value<int>? id, Value<int>? journalId, Value<int>? grammarConceptId}) {
+    return JournalConceptsCompanion(
+      id: id ?? this.id,
+      journalId: journalId ?? this.journalId,
+      grammarConceptId: grammarConceptId ?? this.grammarConceptId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (journalId.present) {
+      map['journal_id'] = Variable<int>(journalId.value);
+    }
+    if (grammarConceptId.present) {
+      map['grammar_concept_id'] = Variable<int>(grammarConceptId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JournalConceptsCompanion(')
+          ..write('id: $id, ')
+          ..write('journalId: $journalId, ')
+          ..write('grammarConceptId: $grammarConceptId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1771,6 +2933,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WordNotesTable wordNotes = $WordNotesTable(this);
   late final $WordLearningDataTable wordLearningData =
       $WordLearningDataTable(this);
+  late final $JournalsTable journals = $JournalsTable(this);
+  late final $CorrectionsTable corrections = $CorrectionsTable(this);
+  late final $GrammarConceptsTable grammarConcepts =
+      $GrammarConceptsTable(this);
+  late final $JournalConceptsTable journalConcepts =
+      $JournalConceptsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1782,7 +2950,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         wordExamples,
         wordSynonyms,
         wordNotes,
-        wordLearningData
+        wordLearningData,
+        journals,
+        corrections,
+        grammarConcepts,
+        journalConcepts
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
@@ -1827,6 +2999,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('word_learning_data', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('journals',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('corrections', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('journals',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('journal_concepts', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('grammar_concepts',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('journal_concepts', kind: UpdateKind.delete),
             ],
           ),
         ],
@@ -3943,6 +5136,1190 @@ typedef $$WordLearningDataTableProcessedTableManager = ProcessedTableManager<
     (WordLearningDataData, $$WordLearningDataTableReferences),
     WordLearningDataData,
     PrefetchHooks Function({bool wordId})>;
+typedef $$JournalsTableCreateCompanionBuilder = JournalsCompanion Function({
+  Value<int> id,
+  required String title,
+  required String contentOriginal,
+  Value<String?> contentCorrected,
+  Value<DateTime> createdAt,
+});
+typedef $$JournalsTableUpdateCompanionBuilder = JournalsCompanion Function({
+  Value<int> id,
+  Value<String> title,
+  Value<String> contentOriginal,
+  Value<String?> contentCorrected,
+  Value<DateTime> createdAt,
+});
+
+final class $$JournalsTableReferences
+    extends BaseReferences<_$AppDatabase, $JournalsTable, Journal> {
+  $$JournalsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$CorrectionsTable, List<Correction>>
+      _correctionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.corrections,
+          aliasName:
+              $_aliasNameGenerator(db.journals.id, db.corrections.journalId));
+
+  $$CorrectionsTableProcessedTableManager get correctionsRefs {
+    final manager = $$CorrectionsTableTableManager($_db, $_db.corrections)
+        .filter((f) => f.journalId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_correctionsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$JournalConceptsTable, List<JournalConcept>>
+      _journalConceptsRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.journalConcepts,
+              aliasName: $_aliasNameGenerator(
+                  db.journals.id, db.journalConcepts.journalId));
+
+  $$JournalConceptsTableProcessedTableManager get journalConceptsRefs {
+    final manager =
+        $$JournalConceptsTableTableManager($_db, $_db.journalConcepts)
+            .filter((f) => f.journalId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_journalConceptsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$JournalsTableFilterComposer
+    extends Composer<_$AppDatabase, $JournalsTable> {
+  $$JournalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get contentOriginal => $composableBuilder(
+      column: $table.contentOriginal,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get contentCorrected => $composableBuilder(
+      column: $table.contentCorrected,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> correctionsRefs(
+      Expression<bool> Function($$CorrectionsTableFilterComposer f) f) {
+    final $$CorrectionsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.corrections,
+        getReferencedColumn: (t) => t.journalId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CorrectionsTableFilterComposer(
+              $db: $db,
+              $table: $db.corrections,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> journalConceptsRefs(
+      Expression<bool> Function($$JournalConceptsTableFilterComposer f) f) {
+    final $$JournalConceptsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.journalConcepts,
+        getReferencedColumn: (t) => t.journalId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalConceptsTableFilterComposer(
+              $db: $db,
+              $table: $db.journalConcepts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$JournalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JournalsTable> {
+  $$JournalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get contentOriginal => $composableBuilder(
+      column: $table.contentOriginal,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get contentCorrected => $composableBuilder(
+      column: $table.contentCorrected,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$JournalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JournalsTable> {
+  $$JournalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get contentOriginal => $composableBuilder(
+      column: $table.contentOriginal, builder: (column) => column);
+
+  GeneratedColumn<String> get contentCorrected => $composableBuilder(
+      column: $table.contentCorrected, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> correctionsRefs<T extends Object>(
+      Expression<T> Function($$CorrectionsTableAnnotationComposer a) f) {
+    final $$CorrectionsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.corrections,
+        getReferencedColumn: (t) => t.journalId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CorrectionsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.corrections,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> journalConceptsRefs<T extends Object>(
+      Expression<T> Function($$JournalConceptsTableAnnotationComposer a) f) {
+    final $$JournalConceptsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.journalConcepts,
+        getReferencedColumn: (t) => t.journalId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalConceptsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.journalConcepts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$JournalsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $JournalsTable,
+    Journal,
+    $$JournalsTableFilterComposer,
+    $$JournalsTableOrderingComposer,
+    $$JournalsTableAnnotationComposer,
+    $$JournalsTableCreateCompanionBuilder,
+    $$JournalsTableUpdateCompanionBuilder,
+    (Journal, $$JournalsTableReferences),
+    Journal,
+    PrefetchHooks Function({bool correctionsRefs, bool journalConceptsRefs})> {
+  $$JournalsTableTableManager(_$AppDatabase db, $JournalsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JournalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JournalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JournalsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> contentOriginal = const Value.absent(),
+            Value<String?> contentCorrected = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              JournalsCompanion(
+            id: id,
+            title: title,
+            contentOriginal: contentOriginal,
+            contentCorrected: contentCorrected,
+            createdAt: createdAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String title,
+            required String contentOriginal,
+            Value<String?> contentCorrected = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              JournalsCompanion.insert(
+            id: id,
+            title: title,
+            contentOriginal: contentOriginal,
+            contentCorrected: contentCorrected,
+            createdAt: createdAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$JournalsTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: (
+              {correctionsRefs = false, journalConceptsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (correctionsRefs) db.corrections,
+                if (journalConceptsRefs) db.journalConcepts
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (correctionsRefs)
+                    await $_getPrefetchedData<Journal, $JournalsTable,
+                            Correction>(
+                        currentTable: table,
+                        referencedTable:
+                            $$JournalsTableReferences._correctionsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$JournalsTableReferences(db, table, p0)
+                                .correctionsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.journalId == item.id),
+                        typedResults: items),
+                  if (journalConceptsRefs)
+                    await $_getPrefetchedData<Journal, $JournalsTable,
+                            JournalConcept>(
+                        currentTable: table,
+                        referencedTable: $$JournalsTableReferences
+                            ._journalConceptsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$JournalsTableReferences(db, table, p0)
+                                .journalConceptsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.journalId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$JournalsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $JournalsTable,
+    Journal,
+    $$JournalsTableFilterComposer,
+    $$JournalsTableOrderingComposer,
+    $$JournalsTableAnnotationComposer,
+    $$JournalsTableCreateCompanionBuilder,
+    $$JournalsTableUpdateCompanionBuilder,
+    (Journal, $$JournalsTableReferences),
+    Journal,
+    PrefetchHooks Function({bool correctionsRefs, bool journalConceptsRefs})>;
+typedef $$CorrectionsTableCreateCompanionBuilder = CorrectionsCompanion
+    Function({
+  Value<int> id,
+  required int journalId,
+  required int start,
+  required int end,
+  required String wrong,
+  required String right,
+  required String example,
+  required String explanation,
+  required String type,
+});
+typedef $$CorrectionsTableUpdateCompanionBuilder = CorrectionsCompanion
+    Function({
+  Value<int> id,
+  Value<int> journalId,
+  Value<int> start,
+  Value<int> end,
+  Value<String> wrong,
+  Value<String> right,
+  Value<String> example,
+  Value<String> explanation,
+  Value<String> type,
+});
+
+final class $$CorrectionsTableReferences
+    extends BaseReferences<_$AppDatabase, $CorrectionsTable, Correction> {
+  $$CorrectionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $JournalsTable _journalIdTable(_$AppDatabase db) =>
+      db.journals.createAlias(
+          $_aliasNameGenerator(db.corrections.journalId, db.journals.id));
+
+  $$JournalsTableProcessedTableManager get journalId {
+    final $_column = $_itemColumn<int>('journal_id')!;
+
+    final manager = $$JournalsTableTableManager($_db, $_db.journals)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_journalIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$CorrectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $CorrectionsTable> {
+  $$CorrectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get start => $composableBuilder(
+      column: $table.start, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get end => $composableBuilder(
+      column: $table.end, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get wrong => $composableBuilder(
+      column: $table.wrong, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get right => $composableBuilder(
+      column: $table.right, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get example => $composableBuilder(
+      column: $table.example, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get explanation => $composableBuilder(
+      column: $table.explanation, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  $$JournalsTableFilterComposer get journalId {
+    final $$JournalsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.journalId,
+        referencedTable: $db.journals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalsTableFilterComposer(
+              $db: $db,
+              $table: $db.journals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CorrectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CorrectionsTable> {
+  $$CorrectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get start => $composableBuilder(
+      column: $table.start, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get end => $composableBuilder(
+      column: $table.end, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get wrong => $composableBuilder(
+      column: $table.wrong, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get right => $composableBuilder(
+      column: $table.right, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get example => $composableBuilder(
+      column: $table.example, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get explanation => $composableBuilder(
+      column: $table.explanation, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  $$JournalsTableOrderingComposer get journalId {
+    final $$JournalsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.journalId,
+        referencedTable: $db.journals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalsTableOrderingComposer(
+              $db: $db,
+              $table: $db.journals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CorrectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CorrectionsTable> {
+  $$CorrectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get start =>
+      $composableBuilder(column: $table.start, builder: (column) => column);
+
+  GeneratedColumn<int> get end =>
+      $composableBuilder(column: $table.end, builder: (column) => column);
+
+  GeneratedColumn<String> get wrong =>
+      $composableBuilder(column: $table.wrong, builder: (column) => column);
+
+  GeneratedColumn<String> get right =>
+      $composableBuilder(column: $table.right, builder: (column) => column);
+
+  GeneratedColumn<String> get example =>
+      $composableBuilder(column: $table.example, builder: (column) => column);
+
+  GeneratedColumn<String> get explanation => $composableBuilder(
+      column: $table.explanation, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  $$JournalsTableAnnotationComposer get journalId {
+    final $$JournalsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.journalId,
+        referencedTable: $db.journals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.journals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CorrectionsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $CorrectionsTable,
+    Correction,
+    $$CorrectionsTableFilterComposer,
+    $$CorrectionsTableOrderingComposer,
+    $$CorrectionsTableAnnotationComposer,
+    $$CorrectionsTableCreateCompanionBuilder,
+    $$CorrectionsTableUpdateCompanionBuilder,
+    (Correction, $$CorrectionsTableReferences),
+    Correction,
+    PrefetchHooks Function({bool journalId})> {
+  $$CorrectionsTableTableManager(_$AppDatabase db, $CorrectionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CorrectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CorrectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CorrectionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> journalId = const Value.absent(),
+            Value<int> start = const Value.absent(),
+            Value<int> end = const Value.absent(),
+            Value<String> wrong = const Value.absent(),
+            Value<String> right = const Value.absent(),
+            Value<String> example = const Value.absent(),
+            Value<String> explanation = const Value.absent(),
+            Value<String> type = const Value.absent(),
+          }) =>
+              CorrectionsCompanion(
+            id: id,
+            journalId: journalId,
+            start: start,
+            end: end,
+            wrong: wrong,
+            right: right,
+            example: example,
+            explanation: explanation,
+            type: type,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int journalId,
+            required int start,
+            required int end,
+            required String wrong,
+            required String right,
+            required String example,
+            required String explanation,
+            required String type,
+          }) =>
+              CorrectionsCompanion.insert(
+            id: id,
+            journalId: journalId,
+            start: start,
+            end: end,
+            wrong: wrong,
+            right: right,
+            example: example,
+            explanation: explanation,
+            type: type,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$CorrectionsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({journalId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (journalId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.journalId,
+                    referencedTable:
+                        $$CorrectionsTableReferences._journalIdTable(db),
+                    referencedColumn:
+                        $$CorrectionsTableReferences._journalIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$CorrectionsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $CorrectionsTable,
+    Correction,
+    $$CorrectionsTableFilterComposer,
+    $$CorrectionsTableOrderingComposer,
+    $$CorrectionsTableAnnotationComposer,
+    $$CorrectionsTableCreateCompanionBuilder,
+    $$CorrectionsTableUpdateCompanionBuilder,
+    (Correction, $$CorrectionsTableReferences),
+    Correction,
+    PrefetchHooks Function({bool journalId})>;
+typedef $$GrammarConceptsTableCreateCompanionBuilder = GrammarConceptsCompanion
+    Function({
+  Value<int> id,
+  required String name,
+});
+typedef $$GrammarConceptsTableUpdateCompanionBuilder = GrammarConceptsCompanion
+    Function({
+  Value<int> id,
+  Value<String> name,
+});
+
+final class $$GrammarConceptsTableReferences extends BaseReferences<
+    _$AppDatabase, $GrammarConceptsTable, GrammarConcept> {
+  $$GrammarConceptsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$JournalConceptsTable, List<JournalConcept>>
+      _journalConceptsRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.journalConcepts,
+              aliasName: $_aliasNameGenerator(
+                  db.grammarConcepts.id, db.journalConcepts.grammarConceptId));
+
+  $$JournalConceptsTableProcessedTableManager get journalConceptsRefs {
+    final manager =
+        $$JournalConceptsTableTableManager($_db, $_db.journalConcepts).filter(
+            (f) => f.grammarConceptId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_journalConceptsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$GrammarConceptsTableFilterComposer
+    extends Composer<_$AppDatabase, $GrammarConceptsTable> {
+  $$GrammarConceptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> journalConceptsRefs(
+      Expression<bool> Function($$JournalConceptsTableFilterComposer f) f) {
+    final $$JournalConceptsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.journalConcepts,
+        getReferencedColumn: (t) => t.grammarConceptId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalConceptsTableFilterComposer(
+              $db: $db,
+              $table: $db.journalConcepts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$GrammarConceptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GrammarConceptsTable> {
+  $$GrammarConceptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+}
+
+class $$GrammarConceptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GrammarConceptsTable> {
+  $$GrammarConceptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  Expression<T> journalConceptsRefs<T extends Object>(
+      Expression<T> Function($$JournalConceptsTableAnnotationComposer a) f) {
+    final $$JournalConceptsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.journalConcepts,
+        getReferencedColumn: (t) => t.grammarConceptId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalConceptsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.journalConcepts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$GrammarConceptsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $GrammarConceptsTable,
+    GrammarConcept,
+    $$GrammarConceptsTableFilterComposer,
+    $$GrammarConceptsTableOrderingComposer,
+    $$GrammarConceptsTableAnnotationComposer,
+    $$GrammarConceptsTableCreateCompanionBuilder,
+    $$GrammarConceptsTableUpdateCompanionBuilder,
+    (GrammarConcept, $$GrammarConceptsTableReferences),
+    GrammarConcept,
+    PrefetchHooks Function({bool journalConceptsRefs})> {
+  $$GrammarConceptsTableTableManager(
+      _$AppDatabase db, $GrammarConceptsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GrammarConceptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GrammarConceptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GrammarConceptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+          }) =>
+              GrammarConceptsCompanion(
+            id: id,
+            name: name,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+          }) =>
+              GrammarConceptsCompanion.insert(
+            id: id,
+            name: name,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$GrammarConceptsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({journalConceptsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (journalConceptsRefs) db.journalConcepts
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (journalConceptsRefs)
+                    await $_getPrefetchedData<GrammarConcept,
+                            $GrammarConceptsTable, JournalConcept>(
+                        currentTable: table,
+                        referencedTable: $$GrammarConceptsTableReferences
+                            ._journalConceptsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$GrammarConceptsTableReferences(db, table, p0)
+                                .journalConceptsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.grammarConceptId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$GrammarConceptsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $GrammarConceptsTable,
+    GrammarConcept,
+    $$GrammarConceptsTableFilterComposer,
+    $$GrammarConceptsTableOrderingComposer,
+    $$GrammarConceptsTableAnnotationComposer,
+    $$GrammarConceptsTableCreateCompanionBuilder,
+    $$GrammarConceptsTableUpdateCompanionBuilder,
+    (GrammarConcept, $$GrammarConceptsTableReferences),
+    GrammarConcept,
+    PrefetchHooks Function({bool journalConceptsRefs})>;
+typedef $$JournalConceptsTableCreateCompanionBuilder = JournalConceptsCompanion
+    Function({
+  Value<int> id,
+  required int journalId,
+  required int grammarConceptId,
+});
+typedef $$JournalConceptsTableUpdateCompanionBuilder = JournalConceptsCompanion
+    Function({
+  Value<int> id,
+  Value<int> journalId,
+  Value<int> grammarConceptId,
+});
+
+final class $$JournalConceptsTableReferences extends BaseReferences<
+    _$AppDatabase, $JournalConceptsTable, JournalConcept> {
+  $$JournalConceptsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $JournalsTable _journalIdTable(_$AppDatabase db) =>
+      db.journals.createAlias(
+          $_aliasNameGenerator(db.journalConcepts.journalId, db.journals.id));
+
+  $$JournalsTableProcessedTableManager get journalId {
+    final $_column = $_itemColumn<int>('journal_id')!;
+
+    final manager = $$JournalsTableTableManager($_db, $_db.journals)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_journalIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $GrammarConceptsTable _grammarConceptIdTable(_$AppDatabase db) =>
+      db.grammarConcepts.createAlias($_aliasNameGenerator(
+          db.journalConcepts.grammarConceptId, db.grammarConcepts.id));
+
+  $$GrammarConceptsTableProcessedTableManager get grammarConceptId {
+    final $_column = $_itemColumn<int>('grammar_concept_id')!;
+
+    final manager =
+        $$GrammarConceptsTableTableManager($_db, $_db.grammarConcepts)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_grammarConceptIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$JournalConceptsTableFilterComposer
+    extends Composer<_$AppDatabase, $JournalConceptsTable> {
+  $$JournalConceptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  $$JournalsTableFilterComposer get journalId {
+    final $$JournalsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.journalId,
+        referencedTable: $db.journals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalsTableFilterComposer(
+              $db: $db,
+              $table: $db.journals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GrammarConceptsTableFilterComposer get grammarConceptId {
+    final $$GrammarConceptsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.grammarConceptId,
+        referencedTable: $db.grammarConcepts,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GrammarConceptsTableFilterComposer(
+              $db: $db,
+              $table: $db.grammarConcepts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$JournalConceptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JournalConceptsTable> {
+  $$JournalConceptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  $$JournalsTableOrderingComposer get journalId {
+    final $$JournalsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.journalId,
+        referencedTable: $db.journals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalsTableOrderingComposer(
+              $db: $db,
+              $table: $db.journals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GrammarConceptsTableOrderingComposer get grammarConceptId {
+    final $$GrammarConceptsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.grammarConceptId,
+        referencedTable: $db.grammarConcepts,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GrammarConceptsTableOrderingComposer(
+              $db: $db,
+              $table: $db.grammarConcepts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$JournalConceptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JournalConceptsTable> {
+  $$JournalConceptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  $$JournalsTableAnnotationComposer get journalId {
+    final $$JournalsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.journalId,
+        referencedTable: $db.journals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$JournalsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.journals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GrammarConceptsTableAnnotationComposer get grammarConceptId {
+    final $$GrammarConceptsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.grammarConceptId,
+        referencedTable: $db.grammarConcepts,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GrammarConceptsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.grammarConcepts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$JournalConceptsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $JournalConceptsTable,
+    JournalConcept,
+    $$JournalConceptsTableFilterComposer,
+    $$JournalConceptsTableOrderingComposer,
+    $$JournalConceptsTableAnnotationComposer,
+    $$JournalConceptsTableCreateCompanionBuilder,
+    $$JournalConceptsTableUpdateCompanionBuilder,
+    (JournalConcept, $$JournalConceptsTableReferences),
+    JournalConcept,
+    PrefetchHooks Function({bool journalId, bool grammarConceptId})> {
+  $$JournalConceptsTableTableManager(
+      _$AppDatabase db, $JournalConceptsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JournalConceptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JournalConceptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JournalConceptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> journalId = const Value.absent(),
+            Value<int> grammarConceptId = const Value.absent(),
+          }) =>
+              JournalConceptsCompanion(
+            id: id,
+            journalId: journalId,
+            grammarConceptId: grammarConceptId,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int journalId,
+            required int grammarConceptId,
+          }) =>
+              JournalConceptsCompanion.insert(
+            id: id,
+            journalId: journalId,
+            grammarConceptId: grammarConceptId,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$JournalConceptsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {journalId = false, grammarConceptId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (journalId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.journalId,
+                    referencedTable:
+                        $$JournalConceptsTableReferences._journalIdTable(db),
+                    referencedColumn:
+                        $$JournalConceptsTableReferences._journalIdTable(db).id,
+                  ) as T;
+                }
+                if (grammarConceptId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.grammarConceptId,
+                    referencedTable: $$JournalConceptsTableReferences
+                        ._grammarConceptIdTable(db),
+                    referencedColumn: $$JournalConceptsTableReferences
+                        ._grammarConceptIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$JournalConceptsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $JournalConceptsTable,
+    JournalConcept,
+    $$JournalConceptsTableFilterComposer,
+    $$JournalConceptsTableOrderingComposer,
+    $$JournalConceptsTableAnnotationComposer,
+    $$JournalConceptsTableCreateCompanionBuilder,
+    $$JournalConceptsTableUpdateCompanionBuilder,
+    (JournalConcept, $$JournalConceptsTableReferences),
+    JournalConcept,
+    PrefetchHooks Function({bool journalId, bool grammarConceptId})>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3961,4 +6338,12 @@ class $AppDatabaseManager {
       $$WordNotesTableTableManager(_db, _db.wordNotes);
   $$WordLearningDataTableTableManager get wordLearningData =>
       $$WordLearningDataTableTableManager(_db, _db.wordLearningData);
+  $$JournalsTableTableManager get journals =>
+      $$JournalsTableTableManager(_db, _db.journals);
+  $$CorrectionsTableTableManager get corrections =>
+      $$CorrectionsTableTableManager(_db, _db.corrections);
+  $$GrammarConceptsTableTableManager get grammarConcepts =>
+      $$GrammarConceptsTableTableManager(_db, _db.grammarConcepts);
+  $$JournalConceptsTableTableManager get journalConcepts =>
+      $$JournalConceptsTableTableManager(_db, _db.journalConcepts);
 }

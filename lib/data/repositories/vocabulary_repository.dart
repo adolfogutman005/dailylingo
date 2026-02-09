@@ -226,7 +226,7 @@ class VocabularyRepository {
     );
 
     final corrections = (data['corrections'] as List<dynamic>)
-        .map((c) => Correction(
+        .map((c) => CorrectionClass(
               start: c['start'],
               end: c['end'],
               wrong: c['wrong'],

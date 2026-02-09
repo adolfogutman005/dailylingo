@@ -55,3 +55,39 @@ class WordLearningData extends Table {
   @override
   Set<Column> get primaryKey => {wordId};
 }
+
+class Journals extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  TextColumn get contentOriginal => text().named('content_original')();
+  TextColumn get contentCorrected =>
+      text().nullable().named('content_corrected')();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime).named('created_at')();
+}
+
+class Corrections extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get journalId =>
+      integer().customConstraint('REFERENCES journals(id) ON DELETE CASCADE')();
+  IntColumn get start => integer()();
+  IntColumn get end => integer()();
+  TextColumn get wrong => text()();
+  TextColumn get right => text()();
+  TextColumn get example => text()();
+  TextColumn get explanation => text()();
+  TextColumn get type => text()();
+}
+
+class GrammarConcepts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+}
+
+class JournalConcepts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get journalId =>
+      integer().customConstraint('REFERENCES journals(id) ON DELETE CASCADE')();
+  IntColumn get grammarConceptId => integer()
+      .customConstraint('REFERENCES grammar_concepts(id) ON DELETE CASCADE')();
+}

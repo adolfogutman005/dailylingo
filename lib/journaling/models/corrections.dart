@@ -3,7 +3,7 @@ enum CorrectionType {
   suggestion,
 }
 
-class Correction {
+class CorrectionClass {
   final int start;
   final int end;
   final String wrong;
@@ -14,7 +14,7 @@ class Correction {
 
   final String concept;
 
-  Correction({
+  CorrectionClass({
     required this.start,
     required this.end,
     required this.wrong,

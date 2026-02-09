@@ -3,7 +3,7 @@ import 'corrections.dart';
 class JournalFeedback {
   final String originalContent;
   final String correctedContent;
-  final List<Correction> corrections;
+  final List<CorrectionClass> corrections;
   final List<String> conceptsLearned;
 
   JournalFeedback({

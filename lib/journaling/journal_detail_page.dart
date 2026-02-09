@@ -56,7 +56,7 @@ class _JournalDetailPageState extends State<JournalDetailPage>
                 correctedContent: "Yesterday, I went to the nearby park.",
                 corrections: [
                   /// 1️⃣ GRAMMAR — verb tense (word-level, most specific)
-                  Correction(
+                  CorrectionClass(
                       start: 2,
                       end: 4,
                       wrong: "go",
@@ -68,7 +68,7 @@ class _JournalDetailPageState extends State<JournalDetailPage>
                       concept: "Past tense of go"),
 
                   /// 2️⃣ GRAMMAR — time reference forces past tense (sentence-level)
-                  Correction(
+                  CorrectionClass(
                       start: 0,
                       end: 27,
                       wrong: "I go to the park yesterday.",
@@ -80,7 +80,7 @@ class _JournalDetailPageState extends State<JournalDetailPage>
                       concept: "Time expressions require past tense"),
 
                   /// 3️⃣ SUGGESTION — stylistic reordering
-                  Correction(
+                  CorrectionClass(
                       start: 1,
                       end: 27,
                       wrong: "I went to the park yesterday.",
@@ -92,7 +92,7 @@ class _JournalDetailPageState extends State<JournalDetailPage>
                       concept: "Starting sentences with time expressions"),
 
                   /// 4️⃣ SUGGESTION — add descriptive detail
-                  Correction(
+                  CorrectionClass(
                       start: 8,
                       end: 16,
                       wrong: "the park",

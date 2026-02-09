@@ -4,7 +4,7 @@ class FeedbackData {
   final String title;
   final String originalContent;
   final String correctedContent;
-  final List<Correction> corrections;
+  final List<CorrectionClass> corrections;
   final List<String> conceptsLearned;
 
   FeedbackData({
