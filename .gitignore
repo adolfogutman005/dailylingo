@@ -46,3 +46,6 @@ app.*.map.json
 
 *.db
 *.sqlite
+
+# API Keys Configuration (contains sensitive keys)
+lib/config.dart

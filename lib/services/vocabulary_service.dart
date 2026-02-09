@@ -9,15 +9,16 @@ import '../journaling/models/feedback_data.dart';
 import '../journaling/models/journal.dart';
 import '../exercises/models/grammar_feedback.dart';
 import '../exercises/models/grammar_multiple_choice.dart';
+import '../config.dart';
 
 class VocabularyService {
   late final VocabularyRepository _repo;
   final TranslationService translator =
-      TranslationService(apiKey: "253c4f2b-4394-4dcc-b808-82572df88046:fx");
+      TranslationService(apiKey: ApiKeys.deeplApiKey);
   VocabularyService(AppDatabase db) {
     _repo = VocabularyRepository(
         db: db,
-        ai: GeminiAI(apiKey: "AIzaSyAnmU3TTabtOMlnEc4MmRR7GYFmkP5jREo"),
+        ai: GeminiAI(apiKey: ApiKeys.geminiApiKey),
         translator: translator);
   }
 

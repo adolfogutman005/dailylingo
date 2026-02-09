@@ -6,6 +6,7 @@ import 'state/user_settings_state.dart';
 import 'translator_service.dart';
 import 'services/vocabulary_service.dart';
 import 'language_codes.dart';
+import 'config.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 
   Timer? _debounce;
   final translationService =
-      TranslationService(apiKey: '253c4f2b-4394-4dcc-b808-82572df88046:fx');
+      TranslationService(apiKey: ApiKeys.deeplApiKey);
 
   final TextEditingController sourceController = TextEditingController();
   final TtsService ttsService = TtsService();
