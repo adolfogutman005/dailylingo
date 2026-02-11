@@ -10,7 +10,7 @@ class GeminiAI {
 
   static const String endpoint =
       'https://generativelanguage.googleapis.com/v1beta/models/'
-      'gemma-3-27b-it:generateContent';
+      'gemini-3-flash-preview:generateContent';
 
   GeminiAI({required this.apiKey});
 
